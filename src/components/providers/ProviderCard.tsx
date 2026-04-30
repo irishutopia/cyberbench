@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { MapPin, Globe, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import ProviderAvatar from '@/components/providers/ProviderAvatar';
 import type { Provider, ServiceCategory } from '@/lib/types';
 
 interface ProviderCardProps {
@@ -15,9 +16,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
         <CardContent className="p-6">
           {/* Header */}
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[var(--navy)] text-2xl font-bold text-[var(--cyan)]">
-              {provider.name.charAt(0)}
-            </div>
+            <ProviderAvatar name={provider.name} logoUrl={provider.logo_url} size="md" />
             <div className="min-w-0 flex-1">
               <h3 className="truncate text-lg font-semibold text-foreground group-hover:text-[var(--cyan)] transition-colors">
                 {provider.name}

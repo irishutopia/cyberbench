@@ -1,6 +1,6 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { SERVICE_CATEGORIES, PROVIDERS, CITIES } from '@/lib/seed-data';
-import { ITEMS_PER_PAGE } from '@/lib/constants';
+import { ITEMS_PER_PAGE, US_STATES, stateToSlug, cityToSlug } from '@/lib/constants';
 import type { Provider, ServiceCategory, City, ProviderFilters } from '@/lib/types';
 
 // Check if Supabase is configured
@@ -246,4 +246,190 @@ export async function getStats() {
     cityCount: CITIES.length,
     stateCount: new Set(PROVIDERS.map((p) => p.state_code)).size,
   };
+}
+
+// ============================================================
+// LOCATION DATA (for SEO pages)
+// ============================================================
+
+export interface StateInfo {
+  code: string;
+  name: string;
+  slug: string;
+  cityCount: number;
+  providerCount: number;
+}
+
+export interface CityInfo {
+  name: string;
+  slug: string;
+  state: string;
+  stateCode: string;
+  stateSlug: string;
+  population: number | null;
+  providerCount: number;
+}
+
+export async function getStatesList(): Promise<StateInfo[]> {
+  const stateMap = new Map<string, { code: string; name: string; cities: Set<string>; providers: number }>();
+
+  for (const city of CITIES) {
+    if (!stateMap.has(city.state_code)) {
+      stateMap.set(city.state_code, {
+        code: city.state_code,
+        name: city.state,
+        cities: new Set(),
+        providers: 0,
+      });
+    }
+    stateMap.get(city.state_code)!.cities.add(city.name);
+  }
+
+  for (const p of PROVIDERS) {
+    if (p.state_code && stateMap.has(p.state_code)) {
+      stateMap.get(p.state_code)!.providers++;
+    }
+  }
+
+  return Array.from(stateMap.values())
+    .map((s) => ({
+      code: s.code,
+      name: s.name,
+      slug: stateToSlug(s.name),
+      cityCount: s.cities.size,
+      providerCount: s.providers,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export async function getStateBySlug(stateSlug: string): Promise<StateInfo | null> {
+  const states = await getStatesList();
+  return states.find((s) => s.slug === stateSlug) || null;
+}
+
+export async function getCitiesByState(stateCode: string): Promise<CityInfo[]> {
+  const stateName = US_STATES[stateCode] || '';
+  const stateSlug = stateToSlug(stateName);
+
+  return CITIES
+    .filter((c) => c.state_code === stateCode)
+    .map((c) => {
+      const providerCount = PROVIDERS.filter(
+        (p) => p.city?.toLowerCase() === c.name.toLowerCase() && p.state_code === stateCode
+      ).length;
+      return {
+        name: c.name,
+        slug: cityToSlug(c.name),
+        state: c.state,
+        stateCode: c.state_code,
+        stateSlug,
+        population: c.population,
+        providerCount,
+      };
+    })
+    .sort((a, b) => (b.population || 0) - (a.population || 0));
+}
+
+export async function getCityBySlug(
+  stateSlug: string,
+  citySlug: string
+): Promise<CityInfo | null> {
+  // Find state code from slug
+  const stateEntry = Object.entries(US_STATES).find(
+    ([, name]) => stateToSlug(name) === stateSlug
+  );
+  if (!stateEntry) return null;
+  const [stateCode, stateName] = stateEntry;
+
+  const city = CITIES.find(
+    (c) => c.state_code === stateCode && cityToSlug(c.name) === citySlug
+  );
+  if (!city) return null;
+
+  const providerCount = PROVIDERS.filter(
+    (p) => p.city?.toLowerCase() === city.name.toLowerCase() && p.state_code === stateCode
+  ).length;
+
+  return {
+    name: city.name,
+    slug: cityToSlug(city.name),
+    state: stateName,
+    stateCode,
+    stateSlug,
+    population: city.population,
+    providerCount,
+  };
+}
+
+export async function getProvidersInCity(
+  stateCode: string,
+  cityName: string
+): Promise<(Provider & { services?: ServiceCategory[] })[]> {
+  return buildLocalProviders().filter(
+    (p) =>
+      p.city?.toLowerCase() === cityName.toLowerCase() &&
+      p.state_code === stateCode
+  );
+}
+
+export async function getProvidersInState(
+  stateCode: string
+): Promise<(Provider & { services?: ServiceCategory[] })[]> {
+  return buildLocalProviders().filter((p) => p.state_code === stateCode);
+}
+
+export async function getProvidersInCityByService(
+  stateCode: string,
+  cityName: string,
+  serviceSlug: string
+): Promise<(Provider & { services?: ServiceCategory[] })[]> {
+  return buildLocalProviders().filter(
+    (p) =>
+      p.city?.toLowerCase() === cityName.toLowerCase() &&
+      p.state_code === stateCode &&
+      p.services?.some((s) => s.slug === serviceSlug)
+  );
+}
+
+// Get all city+service combos that have at least one provider
+export async function getAllLocationServiceCombos(): Promise<
+  { stateSlug: string; citySlug: string; serviceSlug: string }[]
+> {
+  const combos: { stateSlug: string; citySlug: string; serviceSlug: string }[] = [];
+  const providers = buildLocalProviders();
+
+  for (const city of CITIES) {
+    const stSlug = stateToSlug(city.state);
+    const ctSlug = cityToSlug(city.name);
+    const cityProviders = providers.filter(
+      (p) =>
+        p.city?.toLowerCase() === city.name.toLowerCase() &&
+        p.state_code === city.state_code
+    );
+    if (cityProviders.length === 0) continue;
+
+    const serviceSet = new Set<string>();
+    for (const p of cityProviders) {
+      for (const s of p.services || []) {
+        serviceSet.add(s.slug);
+      }
+    }
+    for (const sSlug of serviceSet) {
+      combos.push({ stateSlug: stSlug, citySlug: ctSlug, serviceSlug: sSlug });
+    }
+  }
+
+  // Also generate combos for all cities × all services (for SEO, even without providers)
+  for (const city of CITIES) {
+    const stSlug = stateToSlug(city.state);
+    const ctSlug = cityToSlug(city.name);
+    for (const svc of SERVICE_CATEGORIES) {
+      const key = `${stSlug}/${ctSlug}/${svc.slug}`;
+      if (!combos.some((c) => `${c.stateSlug}/${c.citySlug}/${c.serviceSlug}` === key)) {
+        combos.push({ stateSlug: stSlug, citySlug: ctSlug, serviceSlug: svc.slug });
+      }
+    }
+  }
+
+  return combos;
 }

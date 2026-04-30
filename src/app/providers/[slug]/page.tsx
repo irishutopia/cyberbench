@@ -10,12 +10,16 @@ import {
   ExternalLink,
   ArrowLeft,
   Mail,
+  MessageSquare,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import JsonLd from '@/components/seo/JsonLd';
 import { getProviderBySlug, getAllProviderSlugs } from '@/lib/data';
 import { SITE_NAME } from '@/lib/constants';
+import ContactForm from '@/components/forms/ContactForm';
+import ProviderAvatar from '@/components/providers/ProviderAvatar';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -57,27 +61,14 @@ export default async function ProviderPage({ params }: PageProps) {
       <JsonLd type="breadcrumb" breadcrumbs={breadcrumbs} />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-[var(--cyan)]">
-            Home
-          </Link>
-          <span>/</span>
-          <Link href="/providers" className="hover:text-[var(--cyan)]">
-            Providers
-          </Link>
-          <span>/</span>
-          <span className="text-foreground">{provider.name}</span>
-        </nav>
+        <Breadcrumbs items={breadcrumbs} />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Header */}
             <div className="flex items-start gap-6">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-[var(--navy-light)] border border-border text-3xl font-bold text-[var(--cyan)]">
-                {provider.name.charAt(0)}
-              </div>
+              <ProviderAvatar name={provider.name} logoUrl={provider.logo_url} size="lg" />
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
                   {provider.name}
@@ -201,25 +192,16 @@ export default async function ProviderPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* CTA Card */}
+            {/* Get a Quote Form */}
             <div className="rounded-xl border border-[var(--cyan)]/30 bg-[var(--cyan)]/5 p-6">
-              <h3 className="font-semibold text-foreground">
-                Need {provider.name}&apos;s services?
+              <h3 className="flex items-center gap-2 font-semibold text-foreground">
+                <MessageSquare className="h-5 w-5 text-[var(--cyan)]" />
+                Get a Quote
               </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Get in touch to discuss your security needs.
+              <p className="mt-2 mb-4 text-sm text-muted-foreground">
+                Tell {provider.name} about your security needs.
               </p>
-              {provider.website && (
-                <a
-                  href={provider.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--cyan)] px-4 py-2.5 text-sm font-semibold text-[var(--navy)] transition-colors hover:bg-[var(--cyan-light)]"
-                >
-                  <Mail className="h-4 w-4" />
-                  Contact Provider
-                </a>
-              )}
+              <ContactForm providerSlug={provider.slug} providerName={provider.name} />
             </div>
 
             {/* Claim CTA */}
