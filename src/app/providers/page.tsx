@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import SearchBar from '@/components/layout/SearchBar';
 import ProviderGrid from '@/components/providers/ProviderGrid';
 import ProviderFilters from '@/components/providers/ProviderFilters';
+import ScanCTA from '@/components/scan/ScanCTA';
 import { getProviders, getCategories, getStates } from '@/lib/data';
 import { ITEMS_PER_PAGE } from '@/lib/constants';
 import Link from 'next/link';
@@ -75,6 +76,11 @@ export default async function ProvidersPage({ searchParams }: PageProps) {
         <Suspense fallback={null}>
           <ProviderFilters categories={categories} states={states} />
         </Suspense>
+      </div>
+
+      {/* Scan CTA */}
+      <div className="mb-6">
+        <ScanCTA variant="banner" />
       </div>
 
       {/* Grid */}

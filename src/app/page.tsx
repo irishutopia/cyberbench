@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Shield, Search, Award, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
 import SearchBar from '@/components/layout/SearchBar';
 import JsonLd from '@/components/seo/JsonLd';
+import ScanCTA from '@/components/scan/ScanCTA';
 import { getCategories, getStats } from '@/lib/data';
 
 export default async function HomePage() {
@@ -165,6 +166,11 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Free Scan CTA */}
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <ScanCTA variant="banner" />
       </section>
 
       {/* CTA Section */}

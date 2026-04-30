@@ -45,12 +45,12 @@ export default function ProviderFilters({ categories, states }: ProviderFiltersP
   );
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
       {/* Category filter */}
       <select
         value={currentCategory}
         onChange={(e) => updateFilter('category', e.target.value)}
-        className="rounded-lg border border-border bg-[var(--navy-light)] px-3 py-2 text-sm text-foreground focus:border-[var(--cyan)] focus:outline-none focus:ring-1 focus:ring-[var(--cyan)]"
+        className="w-full rounded-lg border border-border bg-[var(--navy-light)] px-3 py-2.5 text-sm text-foreground focus:border-[var(--cyan)] focus:outline-none focus:ring-1 focus:ring-[var(--cyan)] sm:w-auto"
       >
         <option value="">All Services</option>
         {categories.map((cat) => (
@@ -64,7 +64,7 @@ export default function ProviderFilters({ categories, states }: ProviderFiltersP
       <select
         value={currentState}
         onChange={(e) => updateFilter('state', e.target.value)}
-        className="rounded-lg border border-border bg-[var(--navy-light)] px-3 py-2 text-sm text-foreground focus:border-[var(--cyan)] focus:outline-none focus:ring-1 focus:ring-[var(--cyan)]"
+        className="w-full rounded-lg border border-border bg-[var(--navy-light)] px-3 py-2.5 text-sm text-foreground focus:border-[var(--cyan)] focus:outline-none focus:ring-1 focus:ring-[var(--cyan)] sm:w-auto"
       >
         <option value="">All States</option>
         {states.map((s) => (
