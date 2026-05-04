@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { Users, CheckSquare, MessageSquare, Globe, TrendingUp, Shield } from 'lucide-react';
 import { createAdminClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Admin Dashboard — CyberBench',
 };

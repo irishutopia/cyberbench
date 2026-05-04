@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import { createAdminClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import ClaimActions from './ClaimActions';
 
 export const metadata: Metadata = {

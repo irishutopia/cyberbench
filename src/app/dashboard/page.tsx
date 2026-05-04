@@ -4,6 +4,8 @@ import { Metadata } from 'next';
 import { Eye, MessageSquare, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Provider Dashboard',
 };

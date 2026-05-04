@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { createServerClient } from '@/lib/supabase/server';
 import ProfileEditor from './ProfileEditor';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Edit Profile — Dashboard',
 };

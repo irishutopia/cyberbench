@@ -4,6 +4,8 @@ import { ExternalLink } from 'lucide-react';
 import { createAdminClient } from '@/lib/supabase/server';
 import ProviderAdminActions from './ProviderAdminActions';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Manage Providers — Admin',
 };

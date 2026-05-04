@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { MessageSquare, Mail, Building, Calendar } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Leads — Dashboard',
 };

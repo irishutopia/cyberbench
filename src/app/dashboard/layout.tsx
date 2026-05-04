@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Shield, LayoutDashboard, User, MessageSquare, LogOut } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {

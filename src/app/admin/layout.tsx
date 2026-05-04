@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Shield, LayoutDashboard, Users, CheckSquare, MessageSquare, BarChart3 } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'jwilson@viso.group').split(',').map((e) => e.trim().toLowerCase());
 
 export default async function AdminLayout({
