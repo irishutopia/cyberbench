@@ -6,6 +6,7 @@ import { ISSUE_LABELS, getRiskLevel, getRecommendedServices } from '@/lib/threat
 import { getCategories } from '@/lib/data';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import ScanForm from './ScanForm';
+import InstantScanWidget from '@/components/scan/InstantScanWidget';
 
 export const metadata: Metadata = {
   title: `Free Security Scan — ${SITE_NAME}`,
@@ -139,10 +140,10 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
             {isReferral ? 'Run Another Scan' : 'Scan Your Domain'}
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Enter your domain to receive a comprehensive external security assessment.
-            Results will be emailed to you within 24 hours.
+            Enter your domain for an instant external security assessment.
+            Get your risk grade in ~30 seconds — no signup required.
           </p>
-          <ScanForm />
+          <InstantScanWidget />
         </div>
       </section>
 
