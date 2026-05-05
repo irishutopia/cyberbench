@@ -33,14 +33,39 @@ export default function ProviderAdminActions({ providerId, currentStatus }: Prop
 
   return (
     <div className="flex justify-end gap-1">
-      {currentStatus === 'suspended' ? (
+      {currentStatus === 'draft' && (
+        <button
+          onClick={() => updateStatus('active')}
+          className="rounded px-2 py-1 text-xs text-green-400 hover:bg-green-500/10 font-medium"
+        >
+          ✓ Approve
+        </button>
+      )}
+      {currentStatus === 'draft' && (
+        <button
+          onClick={() => updateStatus('suspended')}
+          className="rounded px-2 py-1 text-xs text-red-400 hover:bg-red-500/10"
+        >
+          ✗ Reject
+        </button>
+      )}
+      {currentStatus === 'suspended' && (
         <button
           onClick={() => updateStatus('active')}
           className="rounded px-2 py-1 text-xs text-green-400 hover:bg-green-500/10"
         >
           Activate
         </button>
-      ) : (
+      )}
+      {currentStatus === 'active' && (
+        <button
+          onClick={() => updateStatus('suspended')}
+          className="rounded px-2 py-1 text-xs text-red-400 hover:bg-red-500/10"
+        >
+          Suspend
+        </button>
+      )}
+      {currentStatus === 'claimed' && (
         <button
           onClick={() => updateStatus('suspended')}
           className="rounded px-2 py-1 text-xs text-red-400 hover:bg-red-500/10"

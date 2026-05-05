@@ -31,6 +31,12 @@ export default function Header() {
             </Link>
           ))}
           <Link
+            href="/list-your-company"
+            className="rounded-lg border border-[var(--cyan)]/30 px-3 py-1.5 text-sm font-medium text-[var(--cyan)] transition-colors hover:bg-[var(--cyan)]/10"
+          >
+            List Your Company
+          </Link>
+          <Link
             href="/scan"
             className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--cyan)] px-4 py-2 text-sm font-semibold text-[var(--navy)] transition-colors hover:bg-[var(--cyan-light)]"
           >
@@ -71,7 +77,7 @@ export default function Header() {
             Free Security Scan
           </Link>
           <Link
-            href="/claim"
+            href="/list-your-company"
             className="mt-2 block rounded-lg border border-[var(--cyan)]/30 px-4 py-2 text-center text-sm font-medium text-[var(--cyan)]"
             onClick={() => setMobileOpen(false)}
           >

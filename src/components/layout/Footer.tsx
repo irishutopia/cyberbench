@@ -11,7 +11,7 @@ const footerLinks = {
   ],
   Company: [
     { href: '/about', label: 'About CyberBench' },
-    { href: '/claim', label: 'Claim Your Listing' },
+    { href: '/list-your-company', label: 'List Your Company' },
     { href: '/blog', label: 'Blog' },
     { href: '/contact', label: 'Contact' },
   ],

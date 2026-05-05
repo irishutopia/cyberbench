@@ -15,14 +15,23 @@ export default async function AdminProvidersPage() {
 
   const { data: providers } = await supabase
     .from('providers')
-    .select('id, name, slug, status, tier, is_claimed, city, state_code, created_at')
-    .order('name')
+    .select('id, name, slug, status, tier, is_claimed, city, state_code, contact_email, created_at')
+    .order('created_at', { ascending: false })
     .limit(200);
+
+  const draftCount = providers?.filter((p) => p.status === 'draft').length || 0;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Manage Providers</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-foreground">Manage Providers</h1>
+          {draftCount > 0 && (
+            <span className="rounded-full bg-yellow-500/10 px-2.5 py-0.5 text-xs font-medium text-yellow-400">
+              {draftCount} pending
+            </span>
+          )}
+        </div>
         <span className="text-sm text-muted-foreground">{providers?.length || 0} providers</span>
       </div>
 
@@ -33,6 +42,7 @@ export default async function AdminProvidersPage() {
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Location</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Contact</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Claimed</th>
               <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
             </tr>
@@ -62,6 +72,9 @@ export default async function AdminProvidersPage() {
                   }`}>
                     {provider.status}
                   </span>
+                </td>
+                <td className="px-4 py-3 text-muted-foreground text-xs">
+                  {provider.contact_email || '—'}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {provider.is_claimed ? '✓' : '—'}
