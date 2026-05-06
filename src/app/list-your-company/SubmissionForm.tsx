@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Script from 'next/script';
 import {
   CheckCircle,
   Building2,
@@ -14,7 +15,10 @@ import {
   Calendar,
   Users,
   Loader2,
+  ShieldCheck,
 } from 'lucide-react';
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAADJ3GAWqAcfqCsTD';
 
 interface Category {
   slug: string;
@@ -65,12 +69,32 @@ export default function SubmissionForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [existingProvider, setExistingProvider] = useState<{ slug: string; name: string } | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetId = useRef<string | null>(null);
 
   useEffect(() => {
     fetch('/api/categories')
       .then((res) => res.json())
       .then((data) => setCategories(data.categories || []))
       .catch(() => {});
+  }, []);
+
+  const renderTurnstile = useCallback(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.turnstile &&
+      turnstileRef.current &&
+      !turnstileWidgetId.current
+    ) {
+      turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback: (token: string) => setTurnstileToken(token),
+        'expired-callback': () => setTurnstileToken(null),
+        'error-callback': () => setTurnstileToken(null),
+        theme: 'dark',
+      });
+    }
   }, []);
 
   function toggleService(slug: string) {
@@ -96,6 +120,12 @@ export default function SubmissionForm() {
     setExistingProvider(null);
 
     const form = new FormData(e.currentTarget);
+    if (!turnstileToken) {
+      setError('Please complete the security check.');
+      setLoading(false);
+      return;
+    }
+
     const data = {
       companyName: form.get('companyName') as string,
       website: form.get('website') as string,
@@ -111,6 +141,7 @@ export default function SubmissionForm() {
       longDescription: form.get('longDescription') as string || undefined,
       industriesServed: selectedIndustries.length ? selectedIndustries : undefined,
       _hp: form.get('_hp') as string,
+      turnstileToken,
     };
 
     if (selectedServices.length === 0) {
@@ -141,6 +172,11 @@ export default function SubmissionForm() {
       setError('Network error. Please check your connection and try again.');
     } finally {
       setLoading(false);
+      // Reset Turnstile for retry
+      if (window.turnstile && turnstileWidgetId.current) {
+        window.turnstile.reset(turnstileWidgetId.current);
+        setTurnstileToken(null);
+      }
     }
   }
 
@@ -164,6 +200,17 @@ export default function SubmissionForm() {
   }
 
   return (
+    <>
+    <Script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
+      strategy="afterInteractive"
+      onReady={() => renderTurnstile()}
+    />
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `window.onTurnstileLoad = function() { /* handled by onReady */ }`,
+      }}
+    />
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Honeypot */}
       <div className="absolute -left-[9999px]" aria-hidden="true">
@@ -470,9 +517,20 @@ export default function SubmissionForm() {
       )}
 
       {/* Submit */}
+      {/* Turnstile Widget */}
+      <div className="flex flex-col items-center gap-2">
+        <div ref={turnstileRef} />
+        {turnstileToken && (
+          <p className="flex items-center gap-1 text-xs text-green-400">
+            <ShieldCheck className="h-3 w-3" />
+            Security check passed
+          </p>
+        )}
+      </div>
+
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !turnstileToken}
         className="w-full rounded-lg bg-[var(--cyan)] px-6 py-3 font-semibold text-[var(--navy)] transition-colors hover:bg-[var(--cyan-light)] disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {loading ? (
@@ -493,5 +551,6 @@ export default function SubmissionForm() {
         </Link>.
       </p>
     </form>
+    </>
   );
 }

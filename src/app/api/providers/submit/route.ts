@@ -57,6 +57,32 @@ async function checkWebsiteReachable(urlStr: string): Promise<boolean> {
   }
 }
 
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY || '';
+
+/** Verify Cloudflare Turnstile token */
+async function verifyTurnstile(token: string, ip: string | null): Promise<boolean> {
+  if (!TURNSTILE_SECRET) {
+    console.warn('[CyberBench] No TURNSTILE_SECRET_KEY set, skipping verification');
+    return true; // Don't block in dev
+  }
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: TURNSTILE_SECRET,
+        response: token,
+        remoteip: ip || undefined,
+      }),
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch (err) {
+    console.error('Turnstile verification error:', err);
+    return false;
+  }
+}
+
 /** Send admin notification email about new submission */
 async function notifyAdmin(companyName: string, contactEmail: string, slug: string) {
   const resendKey = process.env.RESEND_API_KEY;
@@ -109,12 +135,30 @@ export async function POST(request: NextRequest) {
       longDescription,
       industriesServed,
       _hp,
+      turnstileToken,
     } = body;
 
     // Honeypot check
     if (_hp) {
       // Silently accept to not tip off bots
       return NextResponse.json({ success: true, slug: 'submitted' });
+    }
+
+    // Turnstile verification
+    if (!turnstileToken) {
+      return NextResponse.json(
+        { error: 'Security verification required. Please try again.' },
+        { status: 400 }
+      );
+    }
+
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
+    const turnstileValid = await verifyTurnstile(turnstileToken, clientIp);
+    if (!turnstileValid) {
+      return NextResponse.json(
+        { error: 'Security verification failed. Please refresh and try again.' },
+        { status: 403 }
+      );
     }
 
     // Required field validation
