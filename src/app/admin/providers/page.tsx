@@ -15,7 +15,7 @@ export default async function AdminProvidersPage() {
 
   const { data: providers } = await supabase
     .from('providers')
-    .select('id, name, slug, status, tier, is_claimed, city, state_code, contact_email, created_at')
+    .select('id, name, slug, status, tier, is_claimed, city, state_code, contact_email, meta_description, website, created_at')
     .order('created_at', { ascending: false })
     .limit(200);
 
@@ -41,7 +41,7 @@ export default async function AdminProvidersPage() {
             <tr className="border-b border-border bg-card">
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Location</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status / Flags</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Contact</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Claimed</th>
               <th className="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
@@ -64,14 +64,26 @@ export default async function AdminProvidersPage() {
                   {provider.city ? `${provider.city}, ${provider.state_code}` : '—'}
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                    provider.status === 'active' ? 'bg-green-500/10 text-green-400' :
-                    provider.status === 'claimed' ? 'bg-[var(--cyan)]/10 text-[var(--cyan)]' :
-                    provider.status === 'suspended' ? 'bg-red-500/10 text-red-400' :
-                    'bg-yellow-500/10 text-yellow-400'
-                  }`}>
-                    {provider.status}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      provider.status === 'active' ? 'bg-green-500/10 text-green-400' :
+                      provider.status === 'claimed' ? 'bg-[var(--cyan)]/10 text-[var(--cyan)]' :
+                      provider.status === 'suspended' ? 'bg-red-500/10 text-red-400' :
+                      'bg-yellow-500/10 text-yellow-400'
+                    }`}>
+                      {provider.status}
+                    </span>
+                    {provider.meta_description?.includes('email_domain_mismatch') && (
+                      <span className="rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-400" title="Contact email domain does not match website">
+                        ⚠️ email mismatch
+                      </span>
+                    )}
+                    {provider.meta_description?.includes('website_unreachable') && (
+                      <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-xs font-medium text-red-400" title="Website was not reachable at submission time">
+                        🚫 site down
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground text-xs">
                   {provider.contact_email || '—'}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, Globe, Users } from 'lucide-react';
+import { MapPin, Globe, Users, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import ProviderAvatar from '@/components/providers/ProviderAvatar';
@@ -18,9 +18,17 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
           <div className="flex items-start gap-4">
             <ProviderAvatar name={provider.name} logoUrl={provider.logo_url} size="md" />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-lg font-semibold text-foreground group-hover:text-[var(--cyan)] transition-colors">
-                {provider.name}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="truncate text-lg font-semibold text-foreground group-hover:text-[var(--cyan)] transition-colors">
+                  {provider.name}
+                </h3>
+                {provider.is_claimed && provider.status === 'claimed' && (
+                  <span className="flex items-center gap-0.5 rounded-full bg-green-500/15 px-1.5 py-0.5 text-[10px] font-medium text-green-400" title="Verified Provider">
+                    <ShieldCheck className="h-3 w-3" />
+                    Verified
+                  </span>
+                )}
+              </div>
               {provider.headquarters && (
                 <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
                   <MapPin className="h-3.5 w-3.5" />

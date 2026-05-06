@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Mail,
   MessageSquare,
+  ShieldCheck,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -80,11 +81,19 @@ export default async function ProviderPage({ params }: PageProps) {
                   </p>
                 )}
                 {/* Tier badge */}
-                {provider.is_claimed && (
-                  <Badge className="mt-2 bg-[var(--cyan)]/20 text-[var(--cyan)]">
-                    ✓ Claimed Listing
-                  </Badge>
-                )}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {provider.is_claimed && (
+                    <Badge className="bg-[var(--cyan)]/20 text-[var(--cyan)]">
+                      ✓ Claimed
+                    </Badge>
+                  )}
+                  {provider.is_claimed && provider.status === 'claimed' && (
+                    <Badge className="bg-green-500/20 text-green-400 flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3" />
+                      Verified Provider
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
 

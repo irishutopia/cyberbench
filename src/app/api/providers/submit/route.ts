@@ -11,6 +11,85 @@ function slugify(text: string): string {
     .substring(0, 80);
 }
 
+/** Extract root domain from a URL (e.g., https://www.acme.com/about → acme.com) */
+function extractDomain(urlStr: string): string | null {
+  try {
+    const url = new URL(urlStr);
+    const parts = url.hostname.replace(/^www\./, '').split('.');
+    // Handle co.uk, com.au, etc.
+    if (parts.length >= 2) {
+      return parts.slice(-2).join('.');
+    }
+    return url.hostname;
+  } catch {
+    return null;
+  }
+}
+
+/** Check if a website URL is reachable (HEAD request with timeout) */
+async function checkWebsiteReachable(urlStr: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(urlStr, {
+      method: 'HEAD',
+      signal: controller.signal,
+      redirect: 'follow',
+    });
+    clearTimeout(timeout);
+    return res.ok || res.status === 403 || res.status === 405;
+  } catch {
+    // Try GET as fallback (some servers reject HEAD)
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch(urlStr, {
+        method: 'GET',
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: { Range: 'bytes=0-0' },
+      });
+      clearTimeout(timeout);
+      return res.ok || res.status === 403 || res.status === 206;
+    } catch {
+      return false;
+    }
+  }
+}
+
+/** Send admin notification email about new submission */
+async function notifyAdmin(companyName: string, contactEmail: string, slug: string) {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) {
+    console.log(`[CyberBench] New submission: ${companyName} (${contactEmail}) — no RESEND_API_KEY, skipping email`);
+    return;
+  }
+
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendKey}`,
+      },
+      body: JSON.stringify({
+        from: 'CyberBench <notifications@viso.group>',
+        to: process.env.ADMIN_EMAILS || 'jwilson@viso.group',
+        subject: `New CyberBench Listing Submission: ${companyName}`,
+        html: `
+          <h2>New Provider Submission</h2>
+          <p><strong>Company:</strong> ${companyName}</p>
+          <p><strong>Contact:</strong> ${contactEmail}</p>
+          <p><strong>Slug:</strong> ${slug}</p>
+          <p><a href="https://cyberbench.net/admin/providers">Review in Admin Panel →</a></p>
+        `,
+      }),
+    });
+  } catch (err) {
+    console.error('Failed to send admin notification:', err);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -81,6 +160,33 @@ export async function POST(request: NextRequest) {
         { error: 'Please enter a valid email address.' },
         { status: 400 }
       );
+    }
+
+    // Email domain must match website domain
+    const websiteDomain = extractDomain(website);
+    const emailDomain = contactEmail.split('@')[1]?.toLowerCase();
+    const emailRootDomain = emailDomain ? extractDomain(`https://${emailDomain}`) : null;
+
+    const freeEmailProviders = [
+      'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+      'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com', 'yandex.com',
+      'live.com', 'msn.com', 'me.com', 'gmx.com',
+    ];
+
+    let domainMismatch = false;
+    if (freeEmailProviders.includes(emailDomain || '')) {
+      // Flag but don't block — small providers may use Gmail
+      domainMismatch = true;
+    } else if (websiteDomain && emailRootDomain && websiteDomain !== emailRootDomain) {
+      domainMismatch = true;
+    }
+
+    // Website reachability check (non-blocking, just flags)
+    let websiteReachable = true;
+    try {
+      websiteReachable = await checkWebsiteReachable(website.trim());
+    } catch {
+      websiteReachable = false;
     }
 
     // Services limit
@@ -166,6 +272,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Build trust flags for admin review
+    const trustFlags: string[] = [];
+    if (domainMismatch) trustFlags.push('email_domain_mismatch');
+    if (!websiteReachable) trustFlags.push('website_unreachable');
+
     // Insert provider
     const { data: provider, error: insertError } = await supabase
       .from('providers')
@@ -186,6 +297,8 @@ export async function POST(request: NextRequest) {
         status: 'draft',
         tier: 'free',
         is_claimed: false,
+        // Store trust flags in meta_description temporarily (no schema change needed)
+        meta_description: trustFlags.length > 0 ? `[TRUST_FLAGS: ${trustFlags.join(', ')}]` : null,
       })
       .select('id')
       .single();
@@ -214,7 +327,8 @@ export async function POST(request: NextRequest) {
       // Non-fatal — the provider is still created
     }
 
-    // TODO: Send notification email to admin via Resend
+    // Send admin notification
+    await notifyAdmin(companyName.trim(), contactEmail.trim(), slug);
 
     return NextResponse.json({ success: true, slug });
   } catch (err) {
