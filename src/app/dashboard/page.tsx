@@ -52,12 +52,14 @@ export default async function DashboardPage({
       ])
     : [{ count: 0 }, { data: [] }];
 
-  // Get claim request status if no provider
+  // Get claim request status if no provider.
+  // Anonymous claims (email-only, no user_id) are matched by work_email so the
+  // vendor can see "pending review" after signing in before approval.
   const { data: claimRequest } = !provider
     ? await supabase
         .from('claim_requests')
         .select('*')
-        .eq('user_id', user.id)
+        .or(`user_id.eq.${user.id},work_email.eq.${user.email}`)
         .order('created_at', { ascending: false })
         .limit(1)
         .single()

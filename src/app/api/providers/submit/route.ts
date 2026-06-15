@@ -83,6 +83,79 @@ async function verifyTurnstile(token: string, ip: string | null): Promise<boolea
   }
 }
 
+/** Send submission confirmation email to the vendor */
+async function notifyVendor(contactEmail: string, contactName: string, companyName: string) {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) return;
+
+  const safeCompany = companyName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const safeName = contactName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:0">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;max-width:600px;width:100%">
+        <tr><td style="background:#0a0f1e;padding:24px 32px">
+          <p style="color:#00d4ff;font-size:20px;font-weight:700;margin:0">CyberBench</p>
+        </td></tr>
+        <tr><td style="padding:32px">
+          <h1 style="color:#0a0f1e;font-size:22px;margin:0 0 16px">Listing received — we'll be in touch soon</h1>
+          <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px">
+            Hi ${safeName},
+          </p>
+          <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 16px">
+            Thanks for submitting <strong>${safeCompany}</strong> to CyberBench. We've received your listing and our team will review it within 1–2 business days.
+          </p>
+          <p style="color:#374151;font-size:15px;line-height:1.6;margin:0 0 24px">
+            Once approved, you'll receive another email with a link to sign in and manage your listing — including editing your profile, viewing buyer leads, and upgrading to a paid tier for more visibility.
+          </p>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:0 0 24px">
+          <p style="color:#9ca3af;font-size:13px;margin:0">
+            Questions? Reply to this email or contact us at <a href="mailto:jeremy@viso.group" style="color:#00d4ff">jeremy@viso.group</a>.
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const text = `Hi ${contactName},
+
+Thanks for submitting "${companyName}" to CyberBench. We've received your listing and our team will review it within 1–2 business days.
+
+Once approved, you'll receive another email with a link to sign in and manage your listing.
+
+Questions? Contact us at jeremy@viso.group`;
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendKey}`,
+      },
+      body: JSON.stringify({
+        from: 'CyberBench <notifications@viso.group>',
+        reply_to: 'jeremy@viso.group',
+        to: contactEmail,
+        subject: `We received your CyberBench listing — ${companyName}`,
+        html,
+        text,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      console.error('Resend vendor submit confirmation error:', res.status, body);
+    }
+  } catch (err) {
+    console.error('Failed to send vendor submission confirmation:', err);
+  }
+}
+
 /** Send admin notification email about new submission */
 async function notifyAdmin(companyName: string, contactEmail: string, slug: string) {
   const resendKey = process.env.RESEND_API_KEY;
@@ -371,8 +444,9 @@ export async function POST(request: NextRequest) {
       // Non-fatal — the provider is still created
     }
 
-    // Send admin notification
+    // Notify admin and confirm receipt to vendor (non-blocking)
     await notifyAdmin(companyName.trim(), contactEmail.trim(), slug);
+    await notifyVendor(contactEmail.trim(), contactName.trim(), companyName.trim());
 
     return NextResponse.json({ success: true, slug });
   } catch (err) {
