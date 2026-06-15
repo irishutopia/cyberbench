@@ -287,17 +287,18 @@ export async function POST(request: NextRequest) {
       state_code: p.state_code,
     }));
 
-    // Rank: tier score + location boost
+    // Rank: founding > featured > verified > basic, then same-state boost.
+    // Scores must be non-overlapping so tier never loses to a location boost.
     const ranked = [...providers].sort((a, b) => {
       const scoreA =
         (a.is_founding ? 100 : 0) +
+        (a.is_featured ? 20 : 0) +
         (a.is_verified ? 10 : 0) +
-        (a.is_featured ? 5 : 0) +
         (a.state_code === stateCode ? 3 : 0);
       const scoreB =
         (b.is_founding ? 100 : 0) +
+        (b.is_featured ? 20 : 0) +
         (b.is_verified ? 10 : 0) +
-        (b.is_featured ? 5 : 0) +
         (b.state_code === stateCode ? 3 : 0);
       return scoreB - scoreA;
     });

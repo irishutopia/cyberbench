@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { Eye, MessageSquare, CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
+import { Eye, MessageSquare, CheckCircle, AlertCircle, ArrowRight, Crown, ShieldCheck } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
+import UpgradeTierSection from './UpgradeTierSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +11,12 @@ export const metadata: Metadata = {
   title: 'Provider Dashboard',
 };
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ subscription?: string; tier?: string; upgrade?: string; interval?: string }>;
+}) {
+  const params = await searchParams;
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/auth/login?redirect=/dashboard');
@@ -89,8 +95,43 @@ export default async function DashboardPage() {
     );
   }
 
+  const subTier: string | null = (provider as Record<string, unknown>).subscription_tier as string | null ?? null;
+  const subStatus: string | null = (provider as Record<string, unknown>).subscription_status as string | null ?? null;
+  const isFounding: boolean = !!(provider as Record<string, unknown>).is_founding;
+
+  // Derive display tier label
+  function tierLabel(): string {
+    if (isFounding) return 'Founding';
+    if (subTier === 'featured' && subStatus === 'active') return 'Featured';
+    if (subTier === 'verified' && subStatus === 'active') return 'Verified';
+    return 'Basic';
+  }
+  function tierIcon() {
+    if (isFounding || (subTier === 'featured' && subStatus === 'active')) {
+      return <Crown className="h-5 w-5 text-amber-400" />;
+    }
+    if (subTier === 'verified' && subStatus === 'active') {
+      return <ShieldCheck className="h-5 w-5 text-[var(--cyan)]" />;
+    }
+    return <CheckCircle className="h-5 w-5 text-purple-400" />;
+  }
+
   return (
     <div className="space-y-6">
+      {/* Subscription success banner */}
+      {params.subscription === 'success' && (
+        <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-sm text-green-400">
+          <strong>Subscription activated!</strong> Your listing is now upgraded to{' '}
+          <span className="font-semibold capitalize">{params.tier || 'a paid tier'}</span>. It may
+          take a minute to reflect across the directory.
+        </div>
+      )}
+      {params.subscription === 'canceled' && (
+        <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-400">
+          Checkout was canceled. Your listing remains unchanged.
+        </div>
+      )}
+
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">
@@ -136,19 +177,35 @@ export default async function DashboardPage() {
 
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-purple-500/10 p-2">
-              <CheckCircle className="h-5 w-5 text-purple-400" />
+            <div className={`rounded-lg p-2 ${
+              isFounding || subTier === 'featured'
+                ? 'bg-amber-400/10'
+                : subTier === 'verified'
+                ? 'bg-[var(--cyan)]/10'
+                : 'bg-purple-500/10'
+            }`}>
+              {tierIcon()}
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Listing Status</p>
-              <p className="text-2xl font-bold text-foreground capitalize">{provider.status}</p>
+              <p className="text-sm text-muted-foreground">Listing Tier</p>
+              <p className="text-2xl font-bold text-foreground">{tierLabel()}</p>
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Tier: {provider.tier}
+          <p className="mt-2 text-xs text-muted-foreground capitalize">
+            Status: {provider.status}
           </p>
         </div>
       </div>
+
+      {/* Upgrade section — show for non-founding, non-featured providers */}
+      {!isFounding && subTier !== 'featured' && (
+        <UpgradeTierSection
+          providerId={provider.id}
+          currentTier={subTier}
+          currentStatus={subStatus}
+          isFounding={isFounding}
+        />
+      )}
 
       {/* Quick Actions */}
       <div className="rounded-xl border border-border bg-card p-6">
@@ -172,6 +229,12 @@ export default async function DashboardPage() {
             target="_blank"
           >
             View Public Profile →
+          </Link>
+          <Link
+            href="/pricing"
+            className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:border-[var(--cyan)]/50 hover:text-foreground"
+          >
+            Compare Plans →
           </Link>
         </div>
       </div>
