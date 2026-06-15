@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const admin = createAdminClient();
 
     const { data: { user } } = await supabase.auth.getUser();

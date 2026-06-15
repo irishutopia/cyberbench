@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const admin = createAdminClient();
 
     // Auth check
@@ -35,17 +35,33 @@ export async function POST(
       return NextResponse.json({ error: 'Failed to update claim' }, { status: 500 });
     }
 
-    // Update provider to claimed
-    if (provider_id && user_id) {
+    // Determine which provider to claim — prefer the body, fall back to the
+    // claim record (email-based claims won't pass provider_id/user_id).
+    let targetProviderId: string | null = provider_id ?? null;
+    if (!targetProviderId) {
+      const { data: claim } = await admin
+        .from('claim_requests')
+        .select('provider_id')
+        .eq('id', id)
+        .single();
+      targetProviderId = claim?.provider_id ?? null;
+    }
+
+    // Mark the provider claimed. user_id is optional — most claims are
+    // submitted by email and have no linked auth user, which is fine.
+    if (targetProviderId) {
       await admin
         .from('providers')
         .update({
           is_claimed: true,
-          claimed_by: user_id,
+          is_verified: true,
+          claimed_by: user_id ?? null,
           claimed_at: new Date().toISOString(),
-          status: 'claimed',
+          // NOTE: deliberately do NOT touch `status` — it controls directory
+          // visibility (getProviderBySlug filters status='active'). The
+          // claimed/verified badges key off is_claimed / is_verified instead.
         })
-        .eq('id', provider_id);
+        .eq('id', targetProviderId);
     }
 
     return NextResponse.json({ success: true });

@@ -16,6 +16,10 @@ export interface Provider {
   status: 'draft' | 'active' | 'claimed' | 'suspended';
   tier: 'free' | 'professional' | 'premium' | 'enterprise';
   is_claimed: boolean;
+  // Founding Provider Program (monetization Phase A)
+  is_founding?: boolean;
+  is_verified?: boolean;
+  is_featured?: boolean;
   contact_email: string | null;
   contact_phone: string | null;
   meta_title: string | null;

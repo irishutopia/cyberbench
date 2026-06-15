@@ -87,7 +87,7 @@ export default async function ProviderPage({ params }: PageProps) {
                       ✓ Claimed
                     </Badge>
                   )}
-                  {provider.is_claimed && provider.status === 'claimed' && (
+                  {(provider.is_verified || (provider.is_claimed && provider.status === 'claimed')) && (
                     <Badge className="bg-green-500/20 text-green-400 flex items-center gap-1">
                       <ShieldCheck className="h-3 w-3" />
                       Verified Provider

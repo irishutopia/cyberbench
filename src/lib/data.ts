@@ -1,11 +1,81 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { SERVICE_CATEGORIES, PROVIDERS, CITIES } from '@/lib/seed-data';
 import { ITEMS_PER_PAGE, US_STATES, stateToSlug, cityToSlug } from '@/lib/constants';
+import { FOUNDING_TOTAL_SPOTS } from '@/lib/stripe';
 import type { Provider, ServiceCategory, City, ProviderFilters } from '@/lib/types';
 
 // Check if Supabase is configured
 const isSupabaseConfigured = () =>
   !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// ============================================================
+// PLACEMENT WEIGHTING (Founding Provider Program)
+// ============================================================
+// Founding + verified providers sort to the top of any listing.
+// Order: founding > verified > featured > everything else, then
+// stable by name. Used on /providers and /services/[slug].
+export function placementSort<T extends Partial<Provider>>(providers: T[]): T[] {
+  const score = (p: T) =>
+    (p.is_founding ? 100 : 0) + (p.is_verified ? 10 : 0) + (p.is_featured ? 1 : 0);
+  return [...providers].sort((a, b) => {
+    const diff = score(b) - score(a);
+    if (diff !== 0) return diff;
+    return (a.name || '').localeCompare(b.name || '');
+  });
+}
+
+// ============================================================
+// FOUNDING PROVIDER STATS (scarcity counter)
+// ============================================================
+export interface FoundingStats {
+  total: number;   // total founding spots (25)
+  claimed: number; // founding providers already paid
+  remaining: number;
+}
+
+export async function getFoundingStats(): Promise<FoundingStats> {
+  const total = FOUNDING_TOTAL_SPOTS;
+  let claimed = 0;
+
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = await createServerClient();
+      const { count, error } = await supabase
+        .from('providers')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_founding', true);
+      if (!error && typeof count === 'number') claimed = count;
+    } catch {
+      /* fallback: 0 claimed */
+    }
+  }
+
+  const remaining = Math.max(0, total - claimed);
+  return { total, claimed, remaining };
+}
+
+// Fetch active providers from Supabase (real submissions, including
+// founding/verified flags). Returns [] when Supabase is unavailable so
+// callers can fall back to seed data without breaking the page.
+async function getDbProviders(): Promise<(Provider & { services?: ServiceCategory[] })[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = await createServerClient();
+    const { data, error } = await supabase
+      .from('providers')
+      .select('*, provider_services(category_id, service_categories(*))')
+      .in('status', ['active', 'claimed']);
+    if (error || !data) return [];
+    return data.map((d) => ({
+      ...d,
+      services: (d.provider_services || [])
+        .map((ps: { service_categories: ServiceCategory }) => ps.service_categories)
+        .filter(Boolean),
+    }));
+  } catch {
+    return [];
+  }
+}
 
 // ============================================================
 // CATEGORIES
@@ -14,7 +84,7 @@ const isSupabaseConfigured = () =>
 export async function getCategories(): Promise<ServiceCategory[]> {
   if (isSupabaseConfigured()) {
     try {
-      const supabase = createServerClient();
+      const supabase = await createServerClient();
       const { data, error } = await supabase
         .from('service_categories')
         .select('*')
@@ -97,11 +167,25 @@ function buildLocalProviders(): (Provider & { services?: ServiceCategory[] })[] 
   }));
 }
 
+// Merge real DB providers with seed data. DB entries win on slug collision
+// (a seeded company that later submits/upgrades). Result is placement-sorted
+// so founding/verified providers float to the top.
+async function getMergedProviders(): Promise<(Provider & { services?: ServiceCategory[] })[]> {
+  const seed = buildLocalProviders();
+  const db = await getDbProviders();
+  if (db.length === 0) return placementSort(seed);
+
+  const bySlug = new Map<string, Provider & { services?: ServiceCategory[] }>();
+  for (const p of seed) bySlug.set(p.slug, p);
+  for (const p of db) bySlug.set(p.slug, p); // DB overrides seed
+  return placementSort(Array.from(bySlug.values()));
+}
+
 export async function getProviders(
   filters: ProviderFilters = {}
 ): Promise<{ providers: (Provider & { services?: ServiceCategory[] })[]; total: number }> {
   const { q, category, state, city, page = 1 } = filters;
-  let providers = buildLocalProviders();
+  let providers = await getMergedProviders();
 
   // Apply filters
   if (q) {
@@ -144,7 +228,7 @@ export async function getProviderBySlug(
 ): Promise<(Provider & { services?: ServiceCategory[] }) | null> {
   if (isSupabaseConfigured()) {
     try {
-      const supabase = createServerClient();
+      const supabase = await createServerClient();
       const { data, error } = await supabase
         .from('providers')
         .select('*, provider_services(category_id, service_categories(*))')
@@ -173,7 +257,7 @@ export async function getAllProviderSlugs(): Promise<string[]> {
 export async function getProvidersByCategory(
   categorySlug: string
 ): Promise<(Provider & { services?: ServiceCategory[] })[]> {
-  const providers = buildLocalProviders();
+  const providers = await getMergedProviders();
   return providers.filter((p) =>
     p.services?.some((s) => s.slug === categorySlug)
   );

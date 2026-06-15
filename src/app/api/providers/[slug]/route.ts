@@ -7,7 +7,7 @@ export async function PUT(
 ) {
   try {
     const { slug } = await params;
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const admin = createAdminClient();
 
     // Auth check
