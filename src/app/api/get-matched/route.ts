@@ -287,17 +287,18 @@ export async function POST(request: NextRequest) {
       state_code: p.state_code,
     }));
 
-    // Rank: tier score + location boost
+    // Rank: founding > featured > verified > basic, then same-state boost.
+    // Scores must be non-overlapping so tier never loses to a location boost.
     const ranked = [...providers].sort((a, b) => {
       const scoreA =
         (a.is_founding ? 100 : 0) +
+        (a.is_featured ? 20 : 0) +
         (a.is_verified ? 10 : 0) +
-        (a.is_featured ? 5 : 0) +
         (a.state_code === stateCode ? 3 : 0);
       const scoreB =
         (b.is_founding ? 100 : 0) +
+        (b.is_featured ? 20 : 0) +
         (b.is_verified ? 10 : 0) +
-        (b.is_featured ? 5 : 0) +
         (b.state_code === stateCode ? 3 : 0);
       return scoreB - scoreA;
     });
@@ -312,20 +313,35 @@ export async function POST(request: NextRequest) {
     // (3) store payment references in match_requests.billing_refs (jsonb column).
 
     // Persist the match request
-    const { error: insertError } = await supabase.from('match_requests').insert({
-      buyer_name: name.trim(),
-      buyer_email: email.trim().toLowerCase(),
-      buyer_company: company?.trim() || null,
-      category_id: category.id,
-      state_code: stateCode,
-      budget: budget || null,
-      need: need.trim(),
-      matched_provider_ids: matched.map((p) => p.id),
-    });
+    const { data: matchRequest, error: insertError } = await supabase
+      .from('match_requests')
+      .insert({
+        buyer_name: name.trim(),
+        buyer_email: email.trim().toLowerCase(),
+        buyer_company: company?.trim() || null,
+        category_id: category.id,
+        state_code: stateCode,
+        budget: budget || null,
+        need: need.trim(),
+        matched_provider_ids: matched.map((p) => p.id),
+      })
+      .select('id')
+      .single();
 
-    if (insertError) {
+    if (insertError || !matchRequest) {
       // Log but don't block — still send emails
       console.error('Failed to persist match request:', insertError);
+    } else if (matched.length > 0) {
+      // Insert per-provider rows for analytics and future per-lead billing
+      const { error: mlpError } = await supabase.from('match_lead_providers').insert(
+        matched.map((p) => ({
+          match_request_id: matchRequest.id,
+          provider_id: p.id,
+        })),
+      );
+      if (mlpError) {
+        console.error('Failed to insert match_lead_providers rows:', mlpError);
+      }
     }
 
     // Send emails (non-blocking failures)

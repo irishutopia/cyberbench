@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { Users, CheckSquare, MessageSquare, Globe, TrendingUp, Shield } from 'lucide-react';
+import { Users, CheckSquare, MessageSquare, Globe, Shield, Target } from 'lucide-react';
 import { createAdminClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -18,13 +18,33 @@ export default async function AdminDashboardPage() {
     { count: pendingClaims },
     { count: leadsCount },
     { count: referralCount },
+    { count: matchRequestCount },
   ] = await Promise.all([
     supabase.from('providers').select('*', { count: 'exact', head: true }),
     supabase.from('providers').select('*', { count: 'exact', head: true }).eq('is_claimed', true),
     supabase.from('claim_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('contact_submissions').select('*', { count: 'exact', head: true }),
     supabase.from('threatscope_referrals').select('*', { count: 'exact', head: true }),
+    supabase.from('match_requests').select('*', { count: 'exact', head: true }),
   ]);
+
+  // Matches per provider summary
+  const { data: matchesPerProvider } = await supabase
+    .from('match_lead_providers')
+    .select('provider_id, providers(name, slug)')
+    .order('created_at', { ascending: false });
+
+  // Aggregate counts client-side (Supabase JS doesn't support group-by yet)
+  const providerMatchCounts: Record<string, { name: string; slug: string; count: number }> = {};
+  for (const row of matchesPerProvider || []) {
+    const pid = row.provider_id as string;
+    const prov = (row.providers as unknown) as { name: string; slug: string } | null;
+    if (!providerMatchCounts[pid]) {
+      providerMatchCounts[pid] = { name: prov?.name ?? pid, slug: prov?.slug ?? '', count: 0 };
+    }
+    providerMatchCounts[pid].count++;
+  }
+  const matchSummary = Object.values(providerMatchCounts).sort((a, b) => b.count - a.count);
 
   // Recent activity
   const { data: recentLeads } = await supabase
@@ -44,6 +64,7 @@ export default async function AdminDashboardPage() {
     { label: 'Claimed Listings', value: claimedCount || 0, icon: Shield, color: 'text-green-400', bg: 'bg-green-500/10' },
     { label: 'Pending Claims', value: pendingClaims || 0, icon: CheckSquare, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
     { label: 'Total Leads', value: leadsCount || 0, icon: MessageSquare, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+    { label: 'Get Matched Requests', value: matchRequestCount || 0, icon: Target, color: 'text-blue-400', bg: 'bg-blue-500/10' },
     { label: 'ThreatScope Referrals', value: referralCount || 0, icon: Globe, color: 'text-orange-400', bg: 'bg-orange-500/10' },
   ];
 
@@ -66,6 +87,26 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Matches Per Provider */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-semibold text-foreground">Get Matched — Per Provider</h2>
+        <p className="mt-1 text-xs text-muted-foreground">Total buyer matches routed to each provider</p>
+        {matchSummary.length > 0 ? (
+          <div className="mt-4 space-y-2">
+            {matchSummary.map((p) => (
+              <div key={p.slug} className="flex items-center justify-between rounded-lg border border-border px-4 py-2.5 text-sm">
+                <span className="font-medium text-foreground">{p.name}</span>
+                <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs text-blue-400">
+                  {p.count} {p.count === 1 ? 'match' : 'matches'}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-muted-foreground">No matches yet.</p>
+        )}
       </div>
 
       {/* Recent Activity */}
