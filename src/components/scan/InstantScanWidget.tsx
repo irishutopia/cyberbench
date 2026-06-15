@@ -310,7 +310,7 @@ export default function InstantScanWidget() {
             <>
               <p className="mb-3 text-sm font-medium text-foreground">
                 <Mail className="mr-1.5 inline-block h-4 w-4 text-[var(--cyan)]" />
-                Get the full report with detailed findings and remediation steps:
+                Get the full report with detailed findings:
               </p>
               <form onSubmit={handleEmailSubmit} className="flex gap-2">
                 <input
