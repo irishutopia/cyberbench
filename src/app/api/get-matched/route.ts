@@ -266,7 +266,11 @@ export async function POST(request: NextRequest) {
         .select(
           'id, name, slug, description, contact_email, is_founding, is_verified, is_featured, state_code',
         )
+        // Consent guard: only route buyer leads to providers who have CLAIMED
+        // their listing (opted in). Seeded/scraped directory entries are for
+        // browse/SEO only and must never be cold-emailed a buyer lead.
         .in('status', ['active', 'claimed'])
+        .eq('is_claimed', true)
         .in('id', categoryProviderIds);
       providerRows = data || [];
     }
