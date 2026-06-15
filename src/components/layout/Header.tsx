@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Shield, Menu, X, Zap } from 'lucide-react';
+import { Shield, Menu, X, Zap, Users } from 'lucide-react';
 import { NAV_LINKS } from '@/lib/constants';
 
 export default function Header() {
@@ -37,6 +37,13 @@ export default function Header() {
             List Your Company
           </Link>
           <Link
+            href="/get-matched"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--cyan)] px-3 py-1.5 text-sm font-semibold text-[var(--cyan)] transition-colors hover:bg-[var(--cyan)]/10"
+          >
+            <Users className="h-4 w-4" />
+            Get Matched
+          </Link>
+          <Link
             href="/scan"
             className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--cyan)] px-4 py-2 text-sm font-semibold text-[var(--navy)] transition-colors hover:bg-[var(--cyan-light)]"
           >
@@ -69,8 +76,16 @@ export default function Header() {
             </Link>
           ))}
           <Link
-            href="/scan"
+            href="/get-matched"
             className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--cyan)] px-4 py-2 text-sm font-semibold text-[var(--navy)]"
+            onClick={() => setMobileOpen(false)}
+          >
+            <Users className="h-4 w-4" />
+            Get Matched
+          </Link>
+          <Link
+            href="/scan"
+            className="mt-2 flex items-center justify-center gap-1.5 rounded-lg border border-[var(--cyan)]/30 px-4 py-2 text-sm font-semibold text-[var(--cyan)]"
             onClick={() => setMobileOpen(false)}
           >
             <Zap className="h-4 w-4" />

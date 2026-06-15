@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Shield, Search, Award, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
+import { Shield, Search, Award, TrendingUp, CheckCircle, ArrowRight, Users } from 'lucide-react';
 import SearchBar from '@/components/layout/SearchBar';
 import JsonLd from '@/components/seo/JsonLd';
 import ScanCTA from '@/components/scan/ScanCTA';
@@ -173,7 +173,35 @@ export default async function HomePage() {
         <ScanCTA variant="banner" />
       </section>
 
-      {/* CTA Section */}
+      {/* Get Matched CTA */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="rounded-2xl border border-[var(--cyan)]/30 bg-gradient-to-r from-[var(--cyan)]/10 to-transparent p-8 sm:p-12">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--cyan)]">
+                <Users className="h-4 w-4" />
+                Free Matching Service
+              </div>
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+                Not sure which provider is right for you?
+              </h2>
+              <p className="mt-2 text-muted-foreground">
+                Tell us what you need and we&apos;ll match you with up to 3 vetted
+                cybersecurity providers — no spam, no cold calls.
+              </p>
+            </div>
+            <Link
+              href="/get-matched"
+              className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-[var(--cyan)] px-6 py-3 text-sm font-semibold text-[var(--navy)] transition-colors hover:bg-[var(--cyan-light)]"
+            >
+              <Users className="h-4 w-4" />
+              Get Matched Free →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Provider CTA Section */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-[var(--cyan)]/30 bg-gradient-to-r from-[var(--cyan)]/10 to-transparent p-8 sm:p-12">
           <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
