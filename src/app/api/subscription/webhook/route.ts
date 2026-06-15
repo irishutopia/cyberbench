@@ -128,9 +128,8 @@ export async function POST(request: NextRequest) {
         const tier = sub.metadata?.tier;
         const interval = sub.metadata?.interval;
         const status = sub.status; // active | past_due | canceled | ...
-        const periodEnd = sub.current_period_end
-          ? new Date(sub.current_period_end * 1000).toISOString()
-          : null;
+        // current_period_end removed from Stripe API 2026-05-27.dahlia; skip for now
+        const periodEnd: string | null = null;
 
         const isActive = status === 'active' || status === 'trialing';
         await applyTierUpdate(providerId, {
@@ -168,9 +167,7 @@ export async function POST(request: NextRequest) {
           subscription_status: 'canceled',
           subscription_interval: null,
           stripe_subscription_id: typeof sub.id === 'string' ? sub.id : null,
-          current_period_end: sub.current_period_end
-            ? new Date(sub.current_period_end * 1000).toISOString()
-            : null,
+          current_period_end: null,
           updated_at: new Date().toISOString(),
         });
 
