@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { Eye, MessageSquare, CheckCircle, AlertCircle, ArrowRight, Crown, ShieldCheck } from 'lucide-react';
+import { Eye, MessageSquare, CheckCircle, AlertCircle, ArrowRight, Crown, ShieldCheck, Target } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 import UpgradeTierSection from './UpgradeTierSection';
 
@@ -35,6 +35,22 @@ export default async function DashboardPage({
         .select('*', { count: 'exact', head: true })
         .eq('provider_id', provider.id)
     : { count: 0 };
+
+  // Get matched buyer count and recent matches
+  const [{ count: matchCount }, { data: recentMatches }] = provider
+    ? await Promise.all([
+        supabase
+          .from('match_lead_providers')
+          .select('*', { count: 'exact', head: true })
+          .eq('provider_id', provider.id),
+        supabase
+          .from('match_lead_providers')
+          .select('created_at, match_requests(buyer_name, category_id, service_categories(name))')
+          .eq('provider_id', provider.id)
+          .order('created_at', { ascending: false })
+          .limit(5),
+      ])
+    : [{ count: 0 }, { data: [] }];
 
   // Get claim request status if no provider
   const { data: claimRequest } = !provider
@@ -143,7 +159,7 @@ export default async function DashboardPage({
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-[var(--cyan)]/10 p-2">
@@ -195,7 +211,47 @@ export default async function DashboardPage({
             Status: {provider.status}
           </p>
         </div>
+
+        <div className="rounded-xl border border-border bg-card p-6">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg bg-blue-500/10 p-2">
+              <Target className="h-5 w-5 text-blue-400" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Buyer Matches</p>
+              <p className="text-2xl font-bold text-foreground">{matchCount || 0}</p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">Buyers matched to your listing</p>
+        </div>
       </div>
+
+      {/* Recent Buyer Matches */}
+      {recentMatches && recentMatches.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="font-semibold text-foreground">Recent Buyer Matches</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Buyers who were matched to your listing via Get Matched</p>
+          <div className="mt-4 space-y-2">
+            {recentMatches.map((m) => {
+              const mr = (m.match_requests as unknown) as {
+                buyer_name: string;
+                service_categories: { name: string } | null;
+              } | null;
+              const buyerFirst = mr?.buyer_name?.split(' ')[0] ?? '—';
+              const category = mr?.service_categories?.name ?? '—';
+              return (
+                <div key={String(m.created_at)} className="flex items-center justify-between rounded-lg border border-border px-4 py-2.5 text-sm">
+                  <span className="text-foreground font-medium">{buyerFirst[0]}{'*'.repeat(Math.max(0, buyerFirst.length - 1))}</span>
+                  <span className="text-muted-foreground">{category}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(m.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Upgrade section — show for non-founding, non-featured providers */}
       {!isFounding && subTier !== 'featured' && (
