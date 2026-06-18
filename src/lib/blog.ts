@@ -4,6 +4,17 @@ import matter from 'gray-matter';
 
 const BLOG_DIR = path.join(process.cwd(), 'content', 'blog');
 
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+
+export interface RankedItem {
+  name: string;
+  description?: string;
+  url?: string;
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -13,6 +24,8 @@ export interface BlogPost {
   image: string | null;
   tags: string[];
   content: string;
+  faqs: FaqItem[];
+  items: RankedItem[];
 }
 
 export interface BlogPostMeta {
@@ -69,6 +82,8 @@ export function getPostBySlug(slug: string): BlogPost | null {
         image: data.image || null,
         tags: data.tags || [],
         content,
+        faqs: data.faqs || [],
+        items: data.items || [],
       };
     }
   }

@@ -69,6 +69,40 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     keywords: post.tags.join(', '),
   };
 
+  // FAQPage JSON-LD — what AI answer engines and Google "People also ask" pull from
+  const faqJsonLd =
+    post.faqs.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: post.faqs.map((f) => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: f.a,
+            },
+          })),
+        }
+      : null;
+
+  // ItemList JSON-LD — ranked entities in comparison/listicle guides
+  const itemListJsonLd =
+    post.items.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: post.title,
+          itemListElement: post.items.map((item, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: item.name,
+            ...(item.description && { description: item.description }),
+            ...(item.url && { url: item.url }),
+          })),
+        }
+      : null;
+
   return (
     <>
       <Breadcrumbs
@@ -83,6 +117,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
 
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Back link */}
