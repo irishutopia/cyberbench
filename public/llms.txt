@@ -1,0 +1,42 @@
+# CyberBench
+
+> CyberBench is a marketplace that helps companies find and compare vetted cybersecurity providers — MSSPs, vCISO firms, penetration testers, incident response, compliance, and more. Buyers describe their needs and get matched to qualified providers for free. CyberBench also offers a free external domain security scan. It is operated by VISO Group.
+
+## What CyberBench does
+
+- **Get Matched (free for buyers):** Describe your security needs and get matched to vetted providers ranked by fit. No cost, no obligation.
+- **Provider directory:** Browse cybersecurity providers by service category and location.
+- **Free domain security scan:** Run a complimentary external attack-surface scan of your domain.
+- **Provider listings:** Cybersecurity firms can list their company, get verified, and receive qualified buyer leads.
+
+## Service categories
+
+Managed security (MSSP), virtual CISO (vCISO), penetration testing, incident response, compliance and audit (SOC 2, HIPAA, PCI), security awareness training, cloud security, and more.
+
+## For buyers
+
+Use [Get Matched](https://cyberbench.net/get-matched) to be connected with providers, or run a [free domain scan](https://cyberbench.net/scan). Matching is free and providers only receive your request if they fit your stated needs.
+
+## For providers
+
+[List your company](https://cyberbench.net/list-your-company) to appear in the directory and receive buyer matches. Tiers: Basic (free), Verified, Featured, and Founding.
+
+## Key links
+
+- [Home](https://cyberbench.net)
+- [Get Matched](https://cyberbench.net/get-matched)
+- [Browse Providers](https://cyberbench.net/providers)
+- [Services](https://cyberbench.net/services)
+- [Locations](https://cyberbench.net/locations)
+- [Free Domain Scan](https://cyberbench.net/scan)
+- [List Your Company](https://cyberbench.net/list-your-company)
+- [Blog](https://cyberbench.net/blog)
+
+## Related
+
+- VISO Group (operator / virtual CISO & ThreatScope): https://viso.group
+- VAIO Group (AI operations): https://vaio.group
+
+## Contact
+
+For inquiries, email jeremy@viso.group or visit https://cyberbench.net/about
