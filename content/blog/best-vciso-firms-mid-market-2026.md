@@ -3,14 +3,14 @@ title: "Best Virtual CISO (vCISO) Firms for Mid-Market & SMBs (2026)"
 slug: "best-vciso-firms-mid-market-2026"
 description: "A neutral 2026 comparison of the top virtual CISO (vCISO) firms for mid-market and small businesses — engagement models, realistic pricing, compliance focus, and how to choose between retained advisory and platform-led services."
 author: "CyberBench Team"
-date: "2026-06-19"
+date: "2026-07-01"
 image: "/blog/choose-provider.jpg"
 tags: ["vCISO", "virtual CISO", "fractional CISO", "mid-market", "buying guide", "compliance"]
 faqs:
   - q: "What is a virtual CISO (vCISO)?"
     a: "A virtual CISO is a senior security executive who provides part-time, fractional security leadership — strategy, governance, compliance, and risk management — for organizations that need CISO-level expertise without the cost of a full-time hire."
   - q: "How much does a vCISO cost in 2026?"
-    a: "Most retained vCISO engagements price between $8,000 and $25,000 per month depending on company stage and regulatory complexity. Sub-$5,000 offerings are usually productized vCISO platforms (software with light human oversight) rather than retained executive advisory. Some mid-market-focused firms offer retained advisory in the $3,500 to $10,000 per month range."
+    a: "For small and mid-market companies, retained vCISO advisory commonly runs about $3,000 to $12,000 per month depending on company size and regulatory complexity, with larger or heavily regulated organizations reaching $20,000 or more. Sub-$5,000 offerings are usually productized vCISO platforms (software with light human oversight) rather than retained executive advisory. Some mid-market-focused firms offer hands-on retained advisory in the $3,500 to $10,000 per month range."
   - q: "What is the difference between a vCISO firm and a vCISO platform?"
     a: "A vCISO firm provides retained executive advisory delivered by experienced security leaders. A vCISO platform (such as Cynomi or Drata's add-on) is software that standardizes assessments and policies with light human oversight — lower cost, but less hands-on senior judgment."
   - q: "When should an SMB hire a vCISO?"
@@ -20,6 +20,8 @@ faqs:
 items:
   - name: "Fractional CISO"
     description: "Two-person vCISO team model for mid-market organizations focused on SOC 2 and ISO 27001."
+  - name: "SideChannel"
+    description: "vCISO bench staffed by former CISOs, placing a named security executive quickly; strong fit for mid-market companies facing SOC 2 or a departed CISO."
   - name: "DeepSeas"
     description: "AI-augmented threat intelligence with governance and risk services for regulated industries."
   - name: "Atlant Security"
@@ -60,6 +62,7 @@ Neither is "better" — but paying platform prices and expecting executive advis
 ## The firms (2026)
 
 - **Fractional CISO** — Two-person vCISO team model aimed at mid-market organizations pursuing SOC 2 and ISO 27001.
+- **SideChannel** — Staffs engagements from a bench of former CISOs and places a named security executive quickly (often within about two weeks). A strong fit for mid-market companies (roughly 25–1,000 employees) facing a SOC 2 requirement or the sudden departure of a security leader.
 - **DeepSeas** — AI-augmented threat intelligence plus governance and risk services; strong for regulated industries.
 - **Atlant Security** — Assigns a team rather than a single consultant; good fit for SaaS and technology companies.
 - **Cynomi** — Platform-based vCISO delivery built for MSPs scaling security services; subscription, tiered.
@@ -79,6 +82,7 @@ Neither is "better" — but paying platform prices and expecting executive advis
 ## How to choose: quick framework
 
 - **Need audit-ready for SOC 2 / ISO 27001?** → Fractional CISO, BD Emerson.
+- **Need a seasoned, former-CISO executive placed fast?** → SideChannel.
 - **SaaS/tech company wanting a team?** → Atlant Security.
 - **MSP scaling security services?** → Cynomi (platform).
 - **Regulated / federal-adjacent SMB?** → DeepSeas, Total Assure.
@@ -92,7 +96,7 @@ Not sure which fits? [Get matched with vetted vCISO firms on CyberBench](https:/
 A virtual CISO is a senior security executive who provides part-time, fractional security leadership — strategy, governance, compliance, and risk management — for organizations that need CISO-level expertise without a full-time hire.
 
 **How much does a vCISO cost in 2026?**
-Most retained engagements run $8,000–$25,000/month depending on stage and regulatory complexity. Sub-$5,000 offerings are usually productized platforms. Some mid-market-focused firms offer retained advisory in the $3,500–$10,000/month range.
+For small and mid-market companies, retained advisory commonly runs about $3,000–$12,000/month depending on size and regulatory complexity, rising to $20,000+ for larger or heavily regulated organizations. Sub-$5,000 offerings are usually productized platforms. Some mid-market-focused firms offer hands-on retained advisory in the $3,500–$10,000/month range.
 
 **What's the difference between a vCISO firm and a vCISO platform?**
 A firm provides retained executive advisory from experienced leaders. A platform is software that standardizes assessments and policies with light oversight — cheaper, but less senior judgment.

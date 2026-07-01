@@ -3,7 +3,7 @@ title: "Best External Attack Surface Management (EASM) Platforms for Mid-Market 
 slug: "best-easm-platforms-mid-market-2026"
 description: "A neutral, mid-market-focused comparison of the top External Attack Surface Management platforms in 2026 — what each does well, realistic pricing, and how to choose without overbuying enterprise tooling."
 author: "CyberBench Team"
-date: "2026-06-18"
+date: "2026-07-01"
 image: "/blog/easm.jpg"
 tags: ["EASM", "attack surface management", "mid-market", "buying guide", "vulnerability management"]
 faqs:
@@ -24,6 +24,8 @@ items:
     description: "Affordable, transparent pricing with strong web-asset coverage. Good for web-heavy mid-market businesses."
   - name: "Attaxion"
     description: "AI-powered, agentless continuous discovery and prioritization with public pricing."
+  - name: "UpGuard Breach Risk"
+    description: "External attack surface and breach-risk monitoring designed for mid-market teams with lean security staff; pairs automatic asset discovery with fast validation."
   - name: "Hadrian"
     description: "Automated offensive-security platform with hourly scanning and leaked-credential monitoring."
   - name: "Rapid7 ASM"
@@ -67,6 +69,7 @@ Then weigh fit factors: pricing transparency, ease of use, integrations (ticketi
 - **Intruder** — Simple, continuous vulnerability management with EASM built in. Automatically scans public-facing assets and is designed for teams without a dedicated security function. Transparent pricing starts around $99/month, with realistic mid-market coverage landing near $10,000/year. One of the strongest options for small-to-mid teams that want reliable external visibility without heavy operational overhead.
 - **Detectify** — Another of the more affordable, transparent-pricing options, with strong web-asset coverage. A good fit for web-heavy mid-market businesses.
 - **Attaxion** — AI-powered, agentless continuous discovery and prioritization with public pricing. A solid choice for always-on visibility into internet-facing infrastructure.
+- **UpGuard (Breach Risk)** — External attack-surface and breach-risk monitoring built for mid-market organizations with lean security teams, pairing automatic asset discovery with fast validation. A good fit for teams that want exposure scoring and vendor-risk context in one place.
 
 ### Best for automated offensive testing
 

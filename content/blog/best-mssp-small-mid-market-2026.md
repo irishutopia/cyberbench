@@ -3,7 +3,7 @@ title: "Best Managed Security Service Providers (MSSPs) for Small & Mid-Market B
 slug: "best-mssp-small-mid-market-2026"
 description: "A neutral 2026 guide to choosing a managed security service provider (MSSP) or MDR for small and mid-market businesses — what you get, realistic monthly pricing, MDR vs MSSP, and how to pick the right partner."
 author: "CyberBench Team"
-date: "2026-06-19"
+date: "2026-07-01"
 image: "/blog/choose-provider.jpg"
 tags: ["MSSP", "managed security", "MDR", "small business", "mid-market", "buying guide"]
 faqs:
@@ -20,6 +20,10 @@ faqs:
 items:
   - name: "Trustwave (LevelBlue)"
     description: "One of the largest pure-play MSSPs; full suite from firewall management and MDR to GRC. Quote-based, typically multi-year contracts."
+  - name: "Arctic Wolf"
+    description: "Cloud-native security operations platform delivering managed detection and response with a named concierge team; popular with mid-market organizations."
+  - name: "Huntress"
+    description: "SMB-focused managed detection and response with a 24/7 SOC; widely adopted by small businesses and the MSPs that serve them."
   - name: "Gradient Cyber"
     description: "Tailored 24/7 monitoring and response for small and mid-market enterprises."
   - name: "Avertium"
@@ -54,6 +58,8 @@ For many small businesses in 2026, **MDR is the more proactive, recommended star
 ## The providers (2026)
 
 - **Trustwave (LevelBlue)** — One of the world's largest pure-play MSSPs; full suite from firewall management and MDR to GRC consulting. Pricing is quote-based and typically aligned to multi-year contracts rather than low-budget SMB tiers.
+- **Arctic Wolf** — Cloud-native security operations platform delivering managed detection and response through a named "concierge" security team. A widely recognized mid-market choice for organizations that want broad managed coverage without building their own SOC.
+- **Huntress** — Managed detection and response built for small and mid-market businesses (and the MSPs that serve them), backed by a 24/7 SOC. A strong entry point for smaller teams that want real human response on a predictable budget.
 - **Gradient Cyber** — Tailored solutions for small and mid-market enterprises, with 24/7 monitoring and response.
 - **Avertium** — Mid-market and enterprise focus; managed extended detection and response (MXDR), actionable threat intelligence, and attack surface reduction.
 - **Foresite** — MDR services combining advanced technology and human expertise to detect and respond to threats in real time.
@@ -67,12 +73,14 @@ For many small businesses in 2026, **MDR is the more proactive, recommended star
 | Mid-sized organization | $5,000–$20,000 |
 | Enterprise | $20,000–$100,000+ |
 
-Costs scale with employee count, number of endpoints, and coverage scope.
+Costs scale with employee count, number of endpoints, and coverage scope. Many SMB and mid-market MSSP/MDR deals are priced per user (commonly ~$20–$250 per user per month depending on scope and add-ons like EDR licenses and incident-response retainers).
+
+*Note: the MDR market continues to consolidate — Red Canary now operates under Zscaler (acquisition completed August 2025) — so confirm current ownership and SLAs when you shortlist.*
 
 ## How to choose: quick framework
 
-- **Want active threat response on a small-business budget?** → start with MDR (Gradient Cyber, Foresite).
-- **Mid-market needing broad managed coverage + threat intel?** → Avertium.
+- **Want active threat response on a small-business budget?** → start with MDR (Huntress, Gradient Cyber, Foresite).
+- **Mid-market needing broad managed coverage + a named SOC team?** → Arctic Wolf, Avertium.
 - **Large or compliance-heavy with multi-year appetite?** → Trustwave (LevelBlue).
 - **Want to see your external exposure before buying monitoring?** → run a free scan / add ThreatScope.
 
