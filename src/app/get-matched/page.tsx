@@ -5,7 +5,7 @@ import GetMatchedForm from './GetMatchedForm';
 export const metadata: Metadata = {
   title: 'Get Matched — Find Your Cybersecurity Provider | CyberBench',
   description:
-    'Tell us what you need and we\'ll match you with the right vetted cybersecurity providers. Free, fast, and unbiased.',
+    'Tell us what you need and we\'ll match you with relevant cybersecurity providers using fit and profile-status signals.',
 };
 
 export default function GetMatchedPage() {
@@ -22,14 +22,14 @@ export default function GetMatchedPage() {
           <span className="text-[var(--cyan)]"> Cybersecurity Provider</span>
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Describe what you need and we&apos;ll connect you with up to 3 vetted providers
+          Describe what you need and we&apos;ll connect you with up to 3 relevant providers
           who specialize in exactly that. No spam, no cold calls — just the right fit.
         </p>
 
         <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
           {[
             { icon: CheckCircle, text: 'Up to 3 matched providers' },
-            { icon: Shield, text: 'Vetted & verified listings' },
+            { icon: Shield, text: 'Verification status shown clearly' },
             { icon: Users, text: 'Introductions, not ads' },
           ].map((item) => (
             <div key={item.text} className="flex items-center gap-1.5">

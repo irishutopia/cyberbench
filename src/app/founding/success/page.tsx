@@ -28,7 +28,7 @@ export default async function FoundingSuccessPage({ searchParams }: PageProps) {
       </h1>
       <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
         Payment received. Your listing is being upgraded to verified founding
-        status with locked-in top placement. Our team will reach out shortly to
+        status with enhanced category visibility. Our team will reach out shortly to
         finish building out your profile.
       </p>
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">

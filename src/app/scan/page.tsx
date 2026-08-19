@@ -187,7 +187,7 @@ export default async function ScanPage({ searchParams }: ScanPageProps) {
                 Need help fixing what we found?
               </h2>
               <p className="mt-2 text-muted-foreground">
-                Browse our directory of vetted cybersecurity providers who can help remediate vulnerabilities and strengthen your security posture.
+                Browse our directory of cybersecurity providers who can help remediate vulnerabilities and strengthen your security posture. Verification status is shown on each claimed profile.
               </p>
             </div>
             <Link

@@ -18,7 +18,7 @@ import FoundingCheckoutButton from './FoundingCheckoutButton';
 export const metadata: Metadata = {
   title: `Become a Founding Provider — ${SITE_NAME}`,
   description:
-    'Be one of the first 25 founding cybersecurity providers on CyberBench. Locked-in top placement, verified badge, profile build-out, and priority matching — $499/year.',
+    'Be one of the first 25 founding cybersecurity providers on CyberBench. Founding recognition, verified badge, profile build-out, and enhanced visibility — $499/year.',
   alternates: { canonical: `${SITE_URL}/founding` },
 };
 
@@ -33,8 +33,8 @@ const BENEFITS = [
   },
   {
     icon: Crown,
-    title: 'Locked-in top placement',
-    body: 'Founding members sort above every free listing in their categories — permanently, not month-to-month.',
+    title: 'Enhanced category visibility',
+    body: 'Founding members receive a visibility boost above free listings during the paid annual term.',
   },
   {
     icon: Sparkles,
@@ -43,18 +43,18 @@ const BENEFITS = [
   },
   {
     icon: Target,
-    title: 'Priority in Get Matched',
-    body: 'When buyers use our matching engine, founding providers are routed warm leads first.',
+    title: 'Matching consideration',
+    body: 'Founding status is one of the relevance signals considered when eligible providers match a buyer request.',
   },
   {
     icon: Flame,
     title: 'Founding-member logo',
-    body: 'A permanent founding badge on your listing that newcomers can never get. Early-mover status, locked in.',
+    body: 'A founding badge identifies your early participation while your founding membership remains active.',
   },
   {
     icon: TrendingUp,
-    title: 'Buyer-intent traffic',
-    body: 'Our free ThreatScope scan funnel sends mid-market buyers who just learned they have a security gap — straight to providers.',
+    title: 'Buyer-intent discovery',
+    body: 'Your eligible profile can be surfaced when buyers use the directory, free scan journey, or matching flow. Traffic and leads are not guaranteed.',
   },
 ];
 
@@ -75,9 +75,9 @@ export default async function FoundingPage() {
           Get listed in front of mid-market cybersecurity buyers — before anyone else.
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-          CyberBench is the trusted marketplace where organizations find and vet
-          security providers. Founding members lock in verified status and
-          top placement for a one-time annual price — no monthly subscription, no churn.
+          CyberBench helps organizations find and evaluate security providers.
+          Founding members receive verified status, a founding badge while active,
+          and enhanced visibility for the paid annual term at the founding rate.
         </p>
 
         {/* Scarcity counter */}
@@ -165,11 +165,11 @@ export default async function FoundingPage() {
             <ul className="mt-6 space-y-3">
               {[
                 'Verified Provider badge',
-                'Locked-in top placement in your categories',
+                'Enhanced visibility in your categories',
                 'Full profile build-out (we write it)',
-                'Priority in the Get Matched engine',
-                'Permanent founding-member logo',
-                'One-time annual charge — cancel anytime, no auto-renew surprises',
+                'Founding status considered in relevant matches',
+                'Founding-member badge while active',
+                'One-time payment for the annual term — renewal handled separately',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3 text-sm text-foreground">
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cyan)]" />

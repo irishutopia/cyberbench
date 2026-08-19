@@ -32,7 +32,7 @@ export default function AboutPage() {
           CISOs.
         </p>
         <p>
-          Every listing is curated and verified. Providers can claim their listings to showcase
+          Directory listings are assembled from public information. Providers can claim and verify their listings to showcase
           certifications, specialties, and client success stories. Buyers can search by service type,
           location, industry focus, and more.
         </p>

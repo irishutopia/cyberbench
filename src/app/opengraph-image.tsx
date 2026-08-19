@@ -64,7 +64,7 @@ export default function OGImage() {
             textAlign: 'center',
           }}
         >
-          Compare 50+ vetted providers · Penetration Testing · MSSP · Compliance
+          Compare 50+ listed providers · Penetration Testing · MSSP · Compliance
         </div>
 
         {/* Domain */}

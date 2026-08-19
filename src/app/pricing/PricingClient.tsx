@@ -224,8 +224,8 @@ export default function PricingPage() {
         {[
           {
             icon: BarChart2,
-            title: 'Buyer-intent traffic',
-            body: 'Our free ThreatScope scan funnel sends mid-market buyers who just discovered a security gap directly to matching providers.',
+            title: 'Buyer-intent discovery',
+            body: 'Eligible profiles can be surfaced through the directory, free scan journey, and matching flow. Traffic and leads vary and are not guaranteed.',
           },
           {
             icon: Zap,

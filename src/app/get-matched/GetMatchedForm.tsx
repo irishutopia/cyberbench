@@ -387,7 +387,7 @@ export default function GetMatchedForm() {
         </button>
 
         <p className="text-center text-xs text-muted-foreground">
-          We&apos;ll match you with up to 3 vetted providers and notify them about your project.
+          We&apos;ll match you with up to 3 relevant providers and notify them about your project.
           Your contact details are shared only with matched providers.
         </p>
       </form>

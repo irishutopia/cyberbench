@@ -33,7 +33,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground sm:text-xl">
-              Browse {stats.providerCount}+ vetted cybersecurity service providers.
+              Browse {stats.providerCount}+ cybersecurity service providers.
               Compare capabilities, read reviews, and connect with experts who protect businesses like yours.
             </p>
 
@@ -143,7 +143,7 @@ export default async function HomePage() {
                 icon: CheckCircle,
                 title: 'Verified Listings',
                 description:
-                  'Every provider is vetted. Claimed listings are verified by our team. Know who you\'re working with.',
+                  'Claimed listings can complete our verification process and display a verified badge. Unclaimed directory entries are clearly distinguished.',
               },
               {
                 icon: Shield,
@@ -186,7 +186,7 @@ export default async function HomePage() {
                 Not sure which provider is right for you?
               </h2>
               <p className="mt-2 text-muted-foreground">
-                Tell us what you need and we&apos;ll match you with up to 3 vetted
+                Tell us what you need and we&apos;ll match you with up to 3 relevant
                 cybersecurity providers — no spam, no cold calls.
               </p>
             </div>
