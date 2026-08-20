@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Shield, LayoutDashboard, Users, CheckSquare, MessageSquare, BarChart3 } from 'lucide-react';
+import { Shield, Users, CheckSquare, MessageSquare, BarChart3, CalendarClock } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -23,6 +23,7 @@ export default async function AdminLayout({
     { href: '/admin', label: 'Dashboard', icon: BarChart3 },
     { href: '/admin/claims', label: 'Claim Requests', icon: CheckSquare },
     { href: '/admin/providers', label: 'Providers', icon: Users },
+    { href: '/admin/founding-renewals', label: 'Founding Renewals', icon: CalendarClock },
     { href: '/admin/leads', label: 'All Leads', icon: MessageSquare },
   ];
 

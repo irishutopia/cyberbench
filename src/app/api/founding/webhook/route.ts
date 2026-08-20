@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe';
 import { createAdminClient } from '@/lib/supabase/server';
+import { foundingTermEnd } from '@/lib/founding-renewal';
 
 // Stripe webhook for the Founding Provider Program.
 // Listens for checkout.session.completed and flags the provider
@@ -56,11 +57,17 @@ export async function POST(request: NextRequest) {
   try {
     const admin = createAdminClient();
 
+    const purchasedAt = new Date().toISOString();
     const update = {
       is_founding: true,
       is_verified: true,
       status: 'active' as const,
-      founding_purchased_at: new Date().toISOString(),
+      founding_purchased_at: purchasedAt,
+      founding_term_ends_at: foundingTermEnd(purchasedAt),
+      founding_renewal_status: 'active',
+      founding_reminder_60_sent_at: null,
+      founding_reminder_30_sent_at: null,
+      founding_overdue_sent_at: null,
       stripe_customer_id:
         typeof session.customer === 'string' ? session.customer : null,
       stripe_session_id: session.id,

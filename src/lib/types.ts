@@ -20,6 +20,9 @@ export interface Provider {
   is_founding?: boolean;
   is_verified?: boolean;
   is_featured?: boolean;
+  founding_purchased_at?: string | null;
+  founding_term_ends_at?: string | null;
+  founding_renewal_status?: 'active' | 'renewal_due' | 'renewed' | 'expired';
   contact_email: string | null;
   contact_phone: string | null;
   meta_title: string | null;

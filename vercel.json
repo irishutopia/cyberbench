@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/founding-renewals",
+      "schedule": "0 14 * * *"
+    }
+  ]
+}
