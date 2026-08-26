@@ -22,8 +22,9 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   if (!post) return { title: 'Not Found' };
 
   return {
-    title: `${post.title} — ${SITE_NAME}`,
+    title: post.title,
     description: post.description,
+    alternates: { canonical: `${SITE_URL}/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.description,

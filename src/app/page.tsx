@@ -1,9 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, Search, Award, TrendingUp, CheckCircle, ArrowRight, Users } from 'lucide-react';
 import SearchBar from '@/components/layout/SearchBar';
 import JsonLd from '@/components/seo/JsonLd';
 import ScanCTA from '@/components/scan/ScanCTA';
 import { getCategories, getStats } from '@/lib/data';
+import { SITE_URL } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  alternates: { canonical: SITE_URL },
+};
 
 export default async function HomePage() {
   const [categories, stats] = await Promise.all([getCategories(), getStats()]);

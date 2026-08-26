@@ -12,7 +12,7 @@ import {
   getProvidersInCity,
   getAllLocationServiceCombos,
 } from '@/lib/data';
-import { SITE_NAME, US_STATES, stateToSlug } from '@/lib/constants';
+import { SITE_URL, US_STATES, stateToSlug } from '@/lib/constants';
 
 interface PageProps {
   params: Promise<{ state: string; city: string; service: string }>;
@@ -32,14 +32,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cityInfo = await getCityBySlug(stateSlug, citySlug);
   const category = await getCategoryBySlug(serviceSlug);
   if (!cityInfo || !category) return { title: 'Not Found' };
+  const stateEntry = Object.entries(US_STATES).find(
+    ([, name]) => stateToSlug(name) === stateSlug
+  );
+  const providers = stateEntry
+    ? await getProvidersInCityByService(stateEntry[0], cityInfo.name, serviceSlug)
+    : [];
 
-  const title = `${category.name} in ${cityInfo.name}, ${cityInfo.stateCode} - Best Providers (2026) | ${SITE_NAME}`;
+  const title = `${category.name} in ${cityInfo.name}, ${cityInfo.stateCode} - Best Providers (2026)`;
   const description = `Find top ${category.name.toLowerCase()} companies in ${cityInfo.name}, ${cityInfo.state}. Compare providers, read reviews, and get quotes from local cybersecurity experts.`;
 
   return {
     title,
     description,
     openGraph: { title, description },
+    alternates: {
+      canonical: `${SITE_URL}/locations/${stateSlug}/${citySlug}/${serviceSlug}`,
+    },
+    robots: providers.length > 0 ? undefined : { index: false, follow: true },
   };
 }
 

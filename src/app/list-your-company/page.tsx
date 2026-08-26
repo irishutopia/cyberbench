@@ -2,11 +2,12 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { Building2, CheckCircle, ShieldCheck, Crown, Flame, ArrowRight } from 'lucide-react';
 import SubmissionForm from './SubmissionForm';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: `List Your Company — ${SITE_NAME}`,
+  title: 'List Your Company',
   description: 'Submit your cybersecurity company to be listed on CyberBench, the trusted directory for finding security service providers.',
+  alternates: { canonical: `${SITE_URL}/list-your-company` },
 };
 
 const TIERS = [

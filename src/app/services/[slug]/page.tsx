@@ -9,7 +9,7 @@ import {
   getProvidersByCategory,
   getCategories,
 } from '@/lib/data';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_NAME, SITE_URL } from '@/lib/constants';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -22,7 +22,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategoryBySlug(slug);
+  const [category, providers] = await Promise.all([
+    getCategoryBySlug(slug),
+    getProvidersByCategory(slug),
+  ]);
   if (!category) return { title: 'Category Not Found' };
 
   return {
@@ -32,6 +35,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description:
       category.meta_description ||
       `Compare the best ${category.name.toLowerCase()} providers. Find trusted cybersecurity companies on ${SITE_NAME}.`,
+    alternates: { canonical: `${SITE_URL}/services/${slug}` },
+    robots: providers.length > 0 ? undefined : { index: false, follow: true },
   };
 }
 

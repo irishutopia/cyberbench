@@ -1,10 +1,16 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/constants';
-import { stateToSlug, cityToSlug } from '@/lib/constants';
-import { SERVICE_CATEGORIES, PROVIDERS, CITIES } from '@/lib/seed-data';
+import { PROVIDERS } from '@/lib/seed-data';
 import { getAllPosts } from '@/lib/blog';
+import {
+  getAllLocationServiceCombos,
+  getCategories,
+  getCitiesByState,
+  getProvidersByCategory,
+  getStatesList,
+} from '@/lib/data';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date().toISOString();
 
   // Static pages
@@ -36,49 +42,56 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Service category pages
-  const servicePages: MetadataRoute.Sitemap = SERVICE_CATEGORIES.map((c) => ({
-    url: `${SITE_URL}/services/${c.slug}`,
-    lastModified: now,
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }));
+  const categories = await getCategories();
+  const serviceInventory = await Promise.all(
+    categories.map(async (category) => ({
+      category,
+      providers: await getProvidersByCategory(category.slug),
+    }))
+  );
+  const servicePages: MetadataRoute.Sitemap = serviceInventory
+    .filter(({ providers }) => providers.length > 0)
+    .map(({ category }) => ({
+      url: `${SITE_URL}/services/${category.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }));
 
-  // State pages
-  const stateSet = new Map<string, string>();
-  for (const city of CITIES) {
-    stateSet.set(city.state_code, city.state);
-  }
-  const statePages: MetadataRoute.Sitemap = Array.from(stateSet.entries()).map(
-    ([, stateName]) => ({
-      url: `${SITE_URL}/locations/${stateToSlug(stateName)}`,
+  // Location pages are listed only when at least one matching provider exists.
+  const states = await getStatesList();
+  const populatedStates = states.filter((state) => state.providerCount > 0);
+  const statePages: MetadataRoute.Sitemap = populatedStates.map((state) => ({
+      url: `${SITE_URL}/locations/${state.slug}`,
       lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
-    })
+    }));
+
+  const citiesByState = await Promise.all(
+    populatedStates.map(async (state) => ({
+      state,
+      cities: await getCitiesByState(state.code),
+    }))
   );
-
-  // City pages
-  const cityPages: MetadataRoute.Sitemap = CITIES.map((city) => ({
-    url: `${SITE_URL}/locations/${stateToSlug(city.state)}/${cityToSlug(city.name)}`,
-    lastModified: now,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }));
-
-  // City + service combo pages
-  const comboPages: MetadataRoute.Sitemap = [];
-  for (const city of CITIES) {
-    const stSlug = stateToSlug(city.state);
-    const ctSlug = cityToSlug(city.name);
-    for (const svc of SERVICE_CATEGORIES) {
-      comboPages.push({
-        url: `${SITE_URL}/locations/${stSlug}/${ctSlug}/${svc.slug}`,
+  const cityPages: MetadataRoute.Sitemap = citiesByState.flatMap(({ state, cities }) =>
+    cities
+      .filter((city) => city.providerCount > 0)
+      .map((city) => ({
+        url: `${SITE_URL}/locations/${state.slug}/${city.slug}`,
         lastModified: now,
         changeFrequency: 'weekly' as const,
-        priority: 0.6,
-      });
-    }
-  }
+        priority: 0.7,
+      }))
+  );
+
+  const combos = await getAllLocationServiceCombos();
+  const comboPages: MetadataRoute.Sitemap = combos.map((combo) => ({
+    url: `${SITE_URL}/locations/${combo.stateSlug}/${combo.citySlug}/${combo.serviceSlug}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }));
 
   return [
     ...staticPages,

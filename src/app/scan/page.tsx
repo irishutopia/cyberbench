@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, AlertTriangle, CheckCircle, ArrowRight, Zap, Globe, Lock, Mail, Server } from 'lucide-react';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_NAME, SITE_URL } from '@/lib/constants';
 import { ISSUE_LABELS, getRiskLevel, getRecommendedServices } from '@/lib/threatscope';
 import { getCategories } from '@/lib/data';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
@@ -9,7 +9,7 @@ import ScanForm from './ScanForm';
 import InstantScanWidget from '@/components/scan/InstantScanWidget';
 
 export const metadata: Metadata = {
-  title: `Free Security Scan — ${SITE_NAME}`,
+  title: 'Free Security Scan',
   description:
     'Run a free external attack surface scan powered by ThreatScope. Discover vulnerabilities, misconfigurations, and security gaps — then find experts to fix them.',
   openGraph: {
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     description:
       'Discover your external attack surface vulnerabilities with a free ThreatScope scan.',
   },
+  alternates: { canonical: `${SITE_URL}/scan` },
 };
 
 interface ScanPageProps {

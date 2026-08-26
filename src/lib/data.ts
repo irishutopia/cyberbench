@@ -503,17 +503,5 @@ export async function getAllLocationServiceCombos(): Promise<
     }
   }
 
-  // Also generate combos for all cities × all services (for SEO, even without providers)
-  for (const city of CITIES) {
-    const stSlug = stateToSlug(city.state);
-    const ctSlug = cityToSlug(city.name);
-    for (const svc of SERVICE_CATEGORIES) {
-      const key = `${stSlug}/${ctSlug}/${svc.slug}`;
-      if (!combos.some((c) => `${c.stateSlug}/${c.citySlug}/${c.serviceSlug}` === key)) {
-        combos.push({ stateSlug: stSlug, citySlug: ctSlug, serviceSlug: svc.slug });
-      }
-    }
-  }
-
   return combos;
 }

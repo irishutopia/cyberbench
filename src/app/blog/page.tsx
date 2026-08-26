@@ -1,19 +1,20 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_NAME, SITE_URL } from '@/lib/constants';
 import { getAllPosts } from '@/lib/blog';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import ScanCTA from '@/components/scan/ScanCTA';
 
 export const metadata: Metadata = {
-  title: `Blog — ${SITE_NAME}`,
+  title: 'Blog',
   description:
     'Cybersecurity insights, guides, and industry analysis from CyberBench. Learn how to protect your business and choose the right security partners.',
   openGraph: {
     title: `Blog — ${SITE_NAME}`,
     description: 'Cybersecurity insights, guides, and industry analysis.',
   },
+  alternates: { canonical: `${SITE_URL}/blog` },
 };
 
 export default function BlogPage() {

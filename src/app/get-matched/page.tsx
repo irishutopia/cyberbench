@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { Users, CheckCircle, Shield } from 'lucide-react';
 import GetMatchedForm from './GetMatchedForm';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: 'Get Matched — Find Your Cybersecurity Provider | CyberBench',
+  title: 'Get Matched — Find Your Cybersecurity Provider',
   description:
     'Tell us what you need and we\'ll match you with relevant cybersecurity providers using fit and profile-status signals.',
+  alternates: { canonical: `${SITE_URL}/get-matched` },
 };
 
 export default function GetMatchedPage() {

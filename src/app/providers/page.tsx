@@ -5,7 +5,7 @@ import ProviderGrid from '@/components/providers/ProviderGrid';
 import ProviderFilters from '@/components/providers/ProviderFilters';
 import ScanCTA from '@/components/scan/ScanCTA';
 import { getProviders, getCategories, getStates } from '@/lib/data';
-import { ITEMS_PER_PAGE } from '@/lib/constants';
+import { ITEMS_PER_PAGE, SITE_URL } from '@/lib/constants';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: 'Browse Cybersecurity Providers',
   description:
     'Search and compare cybersecurity service providers. Filter by service type, location, and specialization.',
+  alternates: { canonical: `${SITE_URL}/providers` },
 };
 
 interface PageProps {

@@ -13,7 +13,7 @@ import {
   getProvidersInState,
   getCategories,
 } from '@/lib/data';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_URL } from '@/lib/constants';
 
 interface PageProps {
   params: Promise<{ state: string }>;
@@ -29,13 +29,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const stateInfo = await getStateBySlug(stateSlug);
   if (!stateInfo) return { title: 'State Not Found' };
 
-  const title = `Cybersecurity Companies in ${stateInfo.name} (2026) | ${SITE_NAME}`;
+  const title = `Cybersecurity Companies in ${stateInfo.name} (2026)`;
   const description = `Find top cybersecurity service providers in ${stateInfo.name}. Browse ${stateInfo.cityCount} cities for penetration testing, managed security, compliance, and more.`;
 
   return {
     title,
     description,
     openGraph: { title, description },
+    alternates: { canonical: `${SITE_URL}/locations/${stateSlug}` },
+    robots: stateInfo.providerCount > 0 ? undefined : { index: false, follow: true },
   };
 }
 

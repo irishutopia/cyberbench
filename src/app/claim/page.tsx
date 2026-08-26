@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Shield, CheckCircle, BarChart3, Users } from 'lucide-react';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Claim Your Listing',
   description:
     'Cybersecurity providers: claim your free listing on CyberBench and connect with businesses that need your services.',
+  alternates: { canonical: `${SITE_URL}/claim` },
 };
 
 export default function ClaimPage() {

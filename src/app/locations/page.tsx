@@ -5,16 +5,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import JsonLd from '@/components/seo/JsonLd';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import { getStatesList, getStats } from '@/lib/data';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_NAME, SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
-  title: `Cybersecurity Companies by Location | ${SITE_NAME}`,
+  title: 'Cybersecurity Companies by Location',
   description:
     'Find cybersecurity service providers near you. Browse by state and city to find local experts in penetration testing, managed security, compliance, and more.',
   openGraph: {
     title: `Cybersecurity Companies by Location | ${SITE_NAME}`,
     description: 'Find cybersecurity service providers near you. Browse by state and city.',
   },
+  alternates: { canonical: `${SITE_URL}/locations` },
 };
 
 export default async function LocationsPage() {

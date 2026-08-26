@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import JsonLd from '@/components/seo/JsonLd';
 import { getProviderBySlug, getAllProviderSlugs } from '@/lib/data';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_NAME, SITE_URL } from '@/lib/constants';
 import ContactForm from '@/components/forms/ContactForm';
 import ProviderAvatar from '@/components/providers/ProviderAvatar';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       provider.meta_description ||
       provider.description ||
       `Learn about ${provider.name}'s cybersecurity services on ${SITE_NAME}.`,
+    alternates: { canonical: `${SITE_URL}/providers/${slug}` },
   };
 }
 

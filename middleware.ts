@@ -1,7 +1,16 @@
 import { type NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.hostname === 'cyberbench.net') {
+    const canonicalUrl = request.nextUrl.clone();
+    canonicalUrl.hostname = 'www.cyberbench.net';
+    canonicalUrl.protocol = 'https:';
+    canonicalUrl.port = '';
+    return NextResponse.redirect(canonicalUrl, 308);
+  }
+
   return await updateSession(request);
 }
 

@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getCategories, getProvidersByCategory } from '@/lib/data';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Cybersecurity Service Categories',
   description:
     'Browse all cybersecurity service categories including penetration testing, managed security, compliance, and more.',
+  alternates: { canonical: `${SITE_URL}/services` },
 };
 
 export default async function ServicesPage() {

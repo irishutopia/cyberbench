@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { Shield, Target, Users, Zap } from 'lucide-react';
+import { SITE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'About CyberBench',
   description:
     'CyberBench is the trusted directory for finding and comparing cybersecurity service providers. A VISO Group product.',
+  alternates: { canonical: `${SITE_URL}/about` },
 };
 
 export default function AboutPage() {

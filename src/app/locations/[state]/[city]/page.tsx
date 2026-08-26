@@ -13,7 +13,7 @@ import {
   getStatesList,
   getCitiesByState,
 } from '@/lib/data';
-import { SITE_NAME, US_STATES, stateToSlug, cityToSlug } from '@/lib/constants';
+import { SITE_URL, US_STATES, stateToSlug, cityToSlug } from '@/lib/constants';
 
 interface PageProps {
   params: Promise<{ state: string; city: string }>;
@@ -36,13 +36,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cityInfo = await getCityBySlug(stateSlug, citySlug);
   if (!cityInfo) return { title: 'City Not Found' };
 
-  const title = `Cybersecurity Companies in ${cityInfo.name}, ${cityInfo.stateCode} (2026) | ${SITE_NAME}`;
+  const title = `Cybersecurity Companies in ${cityInfo.name}, ${cityInfo.stateCode} (2026)`;
   const description = `Find the best cybersecurity service providers in ${cityInfo.name}, ${cityInfo.state}. Compare penetration testing, managed security, compliance, and more from local experts.`;
 
   return {
     title,
     description,
     openGraph: { title, description },
+    alternates: { canonical: `${SITE_URL}/locations/${stateSlug}/${citySlug}` },
+    robots: cityInfo.providerCount > 0 ? undefined : { index: false, follow: true },
   };
 }
 
